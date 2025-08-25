@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBM Quantum Jobs Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d9ff;
+            --secondary: #7b2ff7;
+            --accent: #ff006e;
+            --dark: #0a0e27;
+            --darker: #050714;
+            --light: #e0e6ed;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Futuristic background animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(123, 47, 247, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 0, 110, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Animated grid background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 217, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Header styles */
+        header {
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 7, 20, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* Card styles */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(123, 47, 247, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 217, 255, 0.2);
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .status-badge:hover::before {
+            transform: translateX(0);
+        }
+
+        .status-running {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-queued {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-failed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-cancelled {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            position: relative;
+            overflow: hidden;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progress-shine 2s infinite;
+        }
+
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover::before {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+        }
+
+        .btn-primary {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: rgba(255, 0, 110, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+        }
+
+        /* Inputs and selects */
+        input, select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--light);
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead th {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 217, 255, 0.05);
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        /* Live indicator */
+        .live-indicator {
+            display: flex;
+            align-items: center;
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+        }
+
+        .live-dot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            70% { transform: scale(2.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        /* Glow effect */
+        .glow {
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.7);
+        }
+
+        /* Icon styling */
+        .icon-lg {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Activity log */
+        .activity-item {
+            padding: 10px;
+            border-left: 3px solid var(--primary);
+            background: rgba(0, 217, 255, 0.05);
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(0, 217, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .grid-cols-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            
+            table {
+                font-size: 14px;
+            }
+            
+            thead th, tbody td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <!-- Header -->
+    <header class="py-6 relative z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                    <i class="fas fa-atom icon-lg"></i>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold glow">IBM Quantum Jobs Dashboard</h1>
+                        <p class="text-cyan-400 text-sm">Live Quantum Computing Job Monitoring</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        <span class="text-sm">Live</span>
+                    </div>
+                    <button onclick="refreshData()" class="btn btn-primary flex items-center">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-cyan-400 text-sm mb-1">Active Jobs</p>
+                        <p class="text-3xl font-bold" id="activeJobs">0</p>
+                    </div>
+                    <div class="bg-blue-500 bg-opacity-20 p-3 rounded-lg">
+                        <i class="fas fa-play-circle text-blue-400 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-400 text-sm mb-1">Queued Jobs</p>
+                        <p class="text-3xl font-bold" id="queuedJobs">0</p>
+                    </div>
+                    <div class="bg-yellow-500 bg-opacity-20 p-3 rounded-lg">
+                        <i class="fas fa-clock text-yellow-400 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-400 text-sm mb-1">Completed Today</p>
+                        <p class="text-3xl font-bold" id="completedJobs">0</p>
+                    </div>
+                    <div class="bg-green-500 bg-opacity-20 p-3 rounded-lg">
+                        <i class="fas fa-check-circle text-green-400 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-400 text-sm mb-1">System Load</p>
+                        <p class="text-3xl font-bold" id="systemLoad">0%</p>
+                    </div>
+                    <div class="bg-purple-500 bg-opacity-20 p-3 rounded-lg">
+                        <i class="fas fa-tachometer-alt text-purple-400 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="card p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search by job ID or user..." 
+                               class="w-full pl-10 pr-4 py-3">
+                        <i class="fas fa-search absolute left-3 top-3.5 text-gray-400"></i>
+                    </div>
+                </div>
+                <select id="statusFilter" class="px-4 py-3">
+                    <option value="">All Statuses</option>
+                    <option value="running">Running</option>
+                    <option value="queued">Queued</option>
+                    <option value="completed">Completed</option>
+                    <option value="failed">Failed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select id="backendFilter" class="px-4 py-3">
+                    <option value="">All Backends</option>
+                    <option value="ibm_qasm_simulator">QASM Simulator</option>
+                    <option value="ibmq_manila">ibmq_manila</option>
+                    <option value="ibmq_lima">ibmq_lima</option>
+                    <option value="ibmq_belem">ibmq_belem</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Jobs Table -->
+        <div class="card mb-8 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-800">
+                <h2 class="text-xl font-semibold">Current Quantum Jobs</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Job ID</th>
+                            <th>User</th>
+                            <th>Backend</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Queue Position</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobsTableBody">
+                        <!-- Jobs will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Queue Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="card p-6">
+                <h3 class="text-lg font-semibold mb-4">Backend Queue Status</h3>
+                <div id="backendQueues" class="space-y-3">
+                    <!-- Backend queue info will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                <div id="recentActivity" class="space-y-2">
+                    <!-- Recent activity will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mock data generator
+        const jobStatuses = ['running', 'queued', 'completed', 'failed', 'cancelled'];
+        const backends = ['ibm_qasm_simulator', 'ibmq_manila', 'ibmq_lima', 'ibmq_belem'];
+        const users = ['quantum_researcher', 'qiskit_dev', 'algorithm_expert', 'quantum_enthusiast', 'ibm_q_team'];
+        
+        let jobs = [];
+        let backendQueueInfo = {};
+        let recentActivities = [];
+
+        // Generate random job
+        function generateRandomJob() {
+            const status = jobStatuses[Math.floor(Math.random() * jobStatuses.length)];
+            const backend = backends[Math.floor(Math.random() * backends.length)];
+            const user = users[Math.floor(Math.random() * users.length)];
+            const jobId = 'job_' + Math.random().toString(36).substr(2, 9);
+            
+            return {
+                id: jobId,
+                user: user,
+                backend: backend,
+                status: status,
+                progress: status === 'running' ? Math.floor(Math.random() * 100) : 
+                         status === 'completed' ? 100 : 0,
+                queuePosition: status === 'queued' ? Math.floor(Math.random() * 20) + 1 : null,
+                created: new Date(Date.now() - Math.floor(Math.random() * 3600000)).toISOString(),
+                estimatedTime: status === 'queued' ? Math.floor(Math.random() * 300) + 60 : null
+            };
+        }
+
+        // Initialize jobs
+        function initializeJobs() {
+            jobs = [];
+            for (let i = 0; i < 20; i++) {
+                jobs.push(generateRandomJob());
+            }
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const activeJobs = jobs.filter(job => job.status === 'running').length;
+            const queuedJobs = jobs.filter(job => job.status === 'queued').length;
+            const completedJobs = jobs.filter(job => job.status === 'completed').length;
+            const systemLoad = Math.floor(Math.random() * 40) + 40; // 40-80%
+
+            document.getElementById('activeJobs').textContent = activeJobs;
+            document.getElementById('queuedJobs').textContent = queuedJobs;
+            document.getElementById('completedJobs').textContent = completedJobs;
+            document.getElementById('systemLoad').textContent = systemLoad + '%';
+        }
+
+        // Render jobs table
+        function renderJobsTable(filteredJobs = jobs) {
+            const tbody = document.getElementById('jobsTableBody');
+            tbody.innerHTML = '';
+
+            filteredJobs.forEach(job => {
+                const row = document.createElement('tr');
+                
+                const statusIcon = {
+                    'running': 'fa-play-circle',
+                    'queued': 'fa-clock',
+                    'completed': 'fa-check-circle',
+                    'failed': 'fa-times-circle',
+                    'cancelled': 'fa-ban'
+                };
+
+                row.innerHTML = `
+                    <td>${job.id}</td>
+                    <td>${job.user}</td>
+                    <td>${job.backend}</td>
+                    <td>
+                        <span class="status-badge status-${job.status}">
+                            <i class="fas ${statusIcon[job.status]} mr-1"></i>
+                            ${job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${job.progress}%"></div>
+                        </div>
+                        <span class="text-xs text-gray-400">${job.progress}%</span>
+                    </td>
+                    <td>${job.queuePosition ? `#${job.queuePosition}` : '-'}</td>
+                    <td>${new Date(job.created).toLocaleTimeString()}</td>
+                    <td>
+                        <button onclick="viewJobDetails('${job.id}')" class="text-cyan-400 hover:text-cyan-300 mr-3">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${job.status === 'queued' ? `
+                            <button onclick="cancelJob('${job.id}')" class="text-red-400 hover:text-red-300">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update backend queue info
+        function updateBackendQueueInfo() {
+            const container = document.getElementById('backendQueues');
+            container.innerHTML = '';
+
+            backends.forEach(backend => {
+                const queuedJobs = jobs.filter(job => job.backend === backend && job.status === 'queued').length;
+                const runningJobs = jobs.filter(job => job.backend === backend && job.status === 'running').length;
+                
+                const queueDiv = document.createElement('div');
+                queueDiv.className = 'flex items-center justify-between p-3 bg-gray-900 bg-opacity-50 rounded-lg';
+                queueDiv.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-microchip text-cyan-400"></i>
+                        <span class="font-medium">${backend}</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">
+                            <i class="fas fa-clock text-yellow-400"></i> ${queuedJobs} queued
+                        </span>
+                        <span class="text-sm">
+                            <i class="fas fa-play text-green-400"></i> ${runningJobs} running
+                        </span>
+                    </div>
+                `;
+                container.appendChild(queueDiv);
+            });
+        }
+
+        // Update recent activity
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            container.innerHTML = '';
+
+            // Generate some recent activities
+            const activities = [
+                { type: 'job_completed', message: 'Job job_abc123 completed successfully', time: '2 min ago' },
+                { type: 'job_started', message: 'New job submitted to ibmq_manila', time: '5 min ago' },
+                { type: 'job_failed', message: 'Job job_def456 failed on ibm_qasm_simulator', time: '8 min ago' },
+                { type: 'system_update', message: 'System maintenance completed', time: '15 min ago' }
+            ];
+
+            activities.forEach(activity => {
+                const activityDiv = document.createElement('div');
+                activityDiv.className = 'activity-item';
+                
+                const iconClass = {
+                    'job_completed': 'fa-check-circle text-green-400',
+                    'job_started': 'fa-play-circle text-cyan-400',
+                    'job_failed': 'fa-times-circle text-red-400',
+                    'system_update': 'fa-info-circle text-purple-400'
+                };
+
+                activityDiv.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <i class="fas ${iconClass[activity.type]} mt-1"></i>
+                        <div>
+                            <p>${activity.message}</p>
+                            <p class="text-xs text-gray-500">${activity.time}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(activityDiv);
+            });
+        }
+
+        // Filter jobs
+        function filterJobs() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const backendFilter = document.getElementById('backendFilter').value;
+
+            const filtered = jobs.filter(job => {
+                const matchesSearch = job.id.toLowerCase().includes(searchTerm) || 
+                                    job.user.toLowerCase().includes(searchTerm);
+                const matchesStatus = !statusFilter || job.status === statusFilter;
+                const matchesBackend = !backendFilter || job.backend === backendFilter;
+
+                return matchesSearch && matchesStatus && matchesBackend;
+            });
+
+            renderJobsTable(filtered);
+        }
+
+        // Simulate live updates
+        function simulateLiveUpdates() {
+            // Randomly update some jobs
+            const numUpdates = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < numUpdates; i++) {
+                const randomIndex = Math.floor(Math.random() * jobs.length);
+                const job = jobs[randomIndex];
+                
+                if (job.status === 'running') {
+                    job.progress = Math.min(100, job.progress + Math.floor(Math.random() * 20));
+                    if (job.progress === 100) {
+                        job.status = 'completed';
+                    }
+                } else if (job.status === 'queued' && Math.random() > 0.7) {
+                    job.status = 'running';
+                    job.progress = 0;
+                    job.queuePosition = null;
+                }
+            }
+
+            // Occasionally add new jobs
+            if (Math.random() > 0.8) {
+                jobs.unshift(generateRandomJob());
+                if (jobs.length > 25) {
+                    jobs.pop();
+                }
+            }
+
+            updateStatistics();
+            filterJobs();
+            updateBackendQueueInfo();
+        }
+
+        // Event handlers
+        function refreshData() {
+            initializeJobs();
+            updateStatistics();
+            filterJobs();
+            updateBackendQueueInfo();
+            updateRecentActivity();
+        }
+
+        function viewJobDetails(jobId) {
+            alert(`Viewing details for job: ${jobId}\n\nIn a real implementation, this would open a detailed view of the job.`);
+        }
+
+        function cancelJob(jobId) {
+            if (confirm(`Are you sure you want to cancel job ${jobId}?`)) {
+                const job = jobs.find(j => j.id === jobId);
+                if (job) {
+                    job.status = 'cancelled';
+                    filterJobs();
+                }
+            }
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterJobs);
+        document.getElementById('statusFilter').addEventListener('change', filterJobs);
+        document.getElementById('backendFilter').addEventListener('change', filterJobs);
+
+        // Initialize dashboard
+        initializeJobs();
+        updateStatistics();
+        filterJobs();
+        updateBackendQueueInfo();
+        updateRecentActivity();
+
+        // Start live updates
+        setInterval(simulateLiveUpdates, 3000);
+    </script>
+</body>
+</html>
