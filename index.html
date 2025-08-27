@@ -12,7 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <style>
-        /* All existing CSS remains unchanged */
         :root {
             --primary: #00d9ff;
             --secondary: #7b2ff7;
@@ -445,6 +444,16 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--primary);
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -647,6 +656,10 @@
                         <div id="jobsLoading" class="loading-indicator" style="display: none;">
                             <div class="spinner"></div>
                         </div>
+                        <div id="jobsEmptyState" class="empty-state" style="display: none;">
+                            <i class="fas fa-atom"></i>
+                            <p>No quantum jobs found. Click "Refresh" to create new jobs.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -749,10 +762,10 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-3">
-                                <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">CX</div>
+                                <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">Z</div>
                                 <div>
-                                    <p class="font-medium">CNOT Gate</p>
-                                    <p class="text-xs text-gray-400">Creates entanglement</p>
+                                    <p class="font-medium">Pauli-Z Gate</p>
+                                    <p class="text-xs text-gray-400">Phase flip gate</p>
                                 </div>
                             </div>
                         </div>
@@ -1004,6 +1017,8 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         
         // Mock data for quantum jobs
         const quantumAlgorithms = ['Grover Search', 'Shor Factoring', 'VQE', 'QAOA', 'Quantum SVM', 'Teleportation'];
+        const jobPrefixes = ['Quantum', 'Advanced', 'Experimental', 'Next-Gen', 'Optimized', 'Hybrid'];
+        const jobSuffixes = ['Experiment', 'Simulation', 'Analysis', 'Optimization', 'Test', 'Trial'];
         const backends = ['ibmq_manila', 'ibmq_lima', 'ibmq_belem', 'ibm_qasm_simulator'];
         const jobStatuses = ['running', 'queued', 'completed', 'failed'];
         
@@ -1011,9 +1026,14 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         
         // Generate random quantum job
         function generateQuantumJob() {
+            const algorithm = quantumAlgorithms[Math.floor(Math.random() * quantumAlgorithms.length)];
+            const prefix = jobPrefixes[Math.floor(Math.random() * jobPrefixes.length)];
+            const suffix = jobSuffixes[Math.floor(Math.random() * jobSuffixes.length)];
+            const jobNumber = Math.floor(Math.random() * 1000) + 1;
+            
             return {
                 id: 'qjob_' + Math.random().toString(36).substr(2, 9),
-                algorithm: quantumAlgorithms[Math.floor(Math.random() * quantumAlgorithms.length)],
+                algorithm: `${prefix} ${algorithm} ${suffix} #${jobNumber}`,
                 qubits: Math.floor(Math.random() * 20) + 5,
                 backend: backends[Math.floor(Math.random() * backends.length)],
                 status: jobStatuses[Math.floor(Math.random() * jobStatuses.length)],
@@ -1052,6 +1072,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         function loadJobsFromFirebase() {
             // Show loading indicator
             document.getElementById('jobsLoading').style.display = 'flex';
+            document.getElementById('jobsEmptyState').style.display = 'none';
             
             db.collection('quantumJobs').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
                 jobs = [];
@@ -1064,6 +1085,13 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 
                 // Hide loading indicator
                 document.getElementById('jobsLoading').style.display = 'none';
+                
+                // Show empty state if no jobs
+                if (jobs.length === 0) {
+                    document.getElementById('jobsEmptyState').style.display = 'block';
+                } else {
+                    document.getElementById('jobsEmptyState').style.display = 'none';
+                }
                 
                 renderJobsTable();
                 updateStatistics();
