@@ -499,29 +499,16 @@
     
     <!-- Firebase Project Indicators -->
     <div class="firebase-project-indicator">
-        <i class="fas fa-user-shield mr-2"></i>Auth: logindevolepers
-    </div>
-    <div class="firebase-project-indicator" style="top: 50px;">
-        <i class="fas fa-atom mr-2"></i>Jobs: quantum-jobs-demo
+        <i class="fas fa-atom mr-2"></i>Project: logindevolepers
     </div>
     
     <!-- Debug Info -->
     <div id="debugInfo" class="debug-info"></div>
     
-    <!-- Firebase Status Indicators -->
-    <div id="authFirebaseStatus" class="firebase-status firebase-disconnected" style="bottom: 80px;">
-        <i class="fas fa-user-shield mr-2"></i>
-        <span id="authFirebaseStatusText">Auth Firebase...</span>
-    </div>
-    
-    <div id="jobsFirebaseStatus" class="firebase-status firebase-disconnected" style="bottom: 120px;">
-        <i class="fas fa-atom mr-2"></i>
-        <span id="jobsFirebaseStatusText">Jobs Firebase...</span>
-    </div>
-    
-    <div id="dbFirebaseStatus" class="firebase-status firebase-disconnected">
+    <!-- Firebase Status Indicator -->
+    <div id="firebaseStatus" class="firebase-status firebase-disconnected">
         <i class="fas fa-database mr-2"></i>
-        <span id="dbFirebaseStatusText">DB Firebase...</span>
+        <span id="firebaseStatusText">Firebase...</span>
     </div>
     
     <!-- Login Form -->
@@ -839,36 +826,21 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
     </div>
     
     <script>
-        // Firebase configuration for Authentication
-        const authFirebaseConfig = {
-            apiKey: "AIzaSyDEP3o3ckNDIzJR_OxcyivAXdCXvq1yFCA",
-            authDomain: "logindevolepers.firebaseapp.com",
-            projectId: "logindevolepers",
-            storageBucket: "logindevolepers.firebasestorage.app",
-            messagingSenderId: "214217647520",
-            appId: "1:214217647520:web:3b4b1468032611c6d5f0c5",
-            measurementId: "G-393TED07X1"
+        // Firebase configuration for single project
+        const firebaseConfig = {
+         apiKey: "AIzaSyDibGh8dLXxs1KXwpYgbpsT89GrEkHOCTs",
+  authDomain: "devastating-devolepers.firebaseapp.com",
+  projectId: "devastating-devolepers",
+  storageBucket: "devastating-devolepers.firebasestorage.app",
+  messagingSenderId: "431737862814",
+  appId: "1:431737862814:web:b89abb880e72f25a1ed98f",
+  measurementId: "G-3LD3T3SWRQ"
         };
         
-        // Firebase configuration for Quantum Jobs
-        const quantumJobsFirebaseConfig = {
-            apiKey: "AIzaSyDibGh8dLXxs1KXwpYgbpsT89GrEkHOCTs",
-            authDomain: "devastating-devolepers.firebaseapp.com",
-            projectId: "devastating-devolepers",
-            storageBucket: "devastating-devolepers.firebasestorage.app",
-            messagingSenderId: "431737862814",
-            appId: "1:431737862814:web:b89abb880e72f25a1ed98f",
-            measurementId: "G-3LD3T3SWRQ"
-        };
-        
-        // Initialize Firebase for Authentication
-        const authApp = firebase.initializeApp(authFirebaseConfig, "authApp");
-        const auth = authApp.auth();
-        const db = authApp.firestore();
-        
-        // Initialize Firebase for Quantum Jobs
-        const quantumJobsApp = firebase.initializeApp(quantumJobsFirebaseConfig, "quantumJobsApp");
-        const quantumJobsDb = quantumJobsApp.firestore();
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth();
+        const db = app.firestore();
         
         // Debug function
         function debug(message) {
@@ -907,70 +879,26 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             }
         });
         
-        // Update Firebase connection status for Auth
-        function updateAuthFirebaseStatus(connected) {
-            const statusElement = document.getElementById('authFirebaseStatus');
-            const statusText = document.getElementById('authFirebaseStatusText');
+        // Update Firebase connection status
+        function updateFirebaseStatus(connected) {
+            const statusElement = document.getElementById('firebaseStatus');
+            const statusText = document.getElementById('firebaseStatusText');
             
             if (connected) {
                 statusElement.className = 'firebase-status firebase-connected';
-                statusText.textContent = 'Auth Firebase Connected';
+                statusText.textContent = 'Firebase Connected';
             } else {
                 statusElement.className = 'firebase-status firebase-disconnected';
-                statusText.textContent = 'Auth Firebase Disconnected';
+                statusText.textContent = 'Firebase Disconnected';
             }
         }
         
-        // Update Firebase connection status for Jobs
-        function updateJobsFirebaseStatus(connected) {
-            const statusElement = document.getElementById('jobsFirebaseStatus');
-            const statusText = document.getElementById('jobsFirebaseStatusText');
-            
-            if (connected) {
-                statusElement.className = 'firebase-status firebase-connected';
-                statusText.textContent = 'Jobs Firebase Connected';
-            } else {
-                statusElement.className = 'firebase-status firebase-disconnected';
-                statusText.textContent = 'Jobs Firebase Disconnected';
-            }
-        }
-        
-        // Update Firebase connection status for DB
-        function updateDbFirebaseStatus(connected) {
-            const statusElement = document.getElementById('dbFirebaseStatus');
-            const statusText = document.getElementById('dbFirebaseStatusText');
-            
-            if (connected) {
-                statusElement.className = 'firebase-status firebase-connected';
-                statusText.textContent = 'DB Firebase Connected';
-            } else {
-                statusElement.className = 'firebase-status firebase-disconnected';
-                statusText.textContent = 'DB Firebase Disconnected';
-            }
-        }
-        
-        // Test Auth Firebase connection
-        auth.onAuthStateChanged(() => {
-            updateAuthFirebaseStatus(true);
-        }, (error) => {
-            console.error('Auth Firebase connection error:', error);
-            updateAuthFirebaseStatus(false);
-        });
-        
-        // Test Jobs Firebase connection
-        quantumJobsDb.collection('test').doc('connection').onSnapshot(() => {
-            updateJobsFirebaseStatus(true);
-        }, (error) => {
-            console.error('Jobs Firebase connection error:', error);
-            updateJobsFirebaseStatus(false);
-        });
-        
-        // Test DB Firebase connection
+        // Test Firebase connection
         db.collection('test').doc('connection').onSnapshot(() => {
-            updateDbFirebaseStatus(true);
+            updateFirebaseStatus(true);
         }, (error) => {
-            console.error('DB Firebase connection error:', error);
-            updateDbFirebaseStatus(false);
+            console.error('Firebase connection error:', error);
+            updateFirebaseStatus(false);
         });
         
         // Login form toggle
@@ -1050,7 +978,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 // Sign up
                 auth.createUserWithEmailAndPassword(email, password)
                     .then((userCredential) => {
-                        // Save user data to Database Firebase
+                        // Save user data to Firebase
                         const user = userCredential.user;
                         return db.collection('users').doc(user.uid).set({
                             email: user.email,
@@ -1102,32 +1030,6 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 }
             });
         
-        // Initialize Quantum Jobs Firebase connection
-        quantumJobsDb.enablePersistence()
-            .catch((err) => {
-                if (err.code == 'failed-precondition') {
-                    console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-                } else if (err.code == 'unimplemented') {
-                    console.log('The current browser does not support persistence.');
-                }
-            });
-        
-        // Listen for DB Firebase connection state
-        db.collection('quantumJobs').onSnapshot(() => {
-            updateDbFirebaseStatus(true);
-        }, (error) => {
-            console.error('DB Firebase connection error:', error);
-            updateDbFirebaseStatus(false);
-        });
-        
-        // Listen for Quantum Jobs Firebase connection state
-        quantumJobsDb.collection('quantumJobs').onSnapshot(() => {
-            updateJobsFirebaseStatus(true);
-        }, (error) => {
-            console.error('Quantum Jobs Firebase connection error:', error);
-            updateJobsFirebaseStatus(false);
-        });
-        
         // Mock data for quantum jobs
         const quantumAlgorithms = ['Grover Search', 'Shor Factoring', 'VQE', 'QAOA', 'Quantum SVM', 'Teleportation'];
         const jobPrefixes = ['Quantum', 'Advanced', 'Experimental', 'Next-Gen', 'Optimized', 'Hybrid'];
@@ -1156,15 +1058,15 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         
         // Create sample jobs
         function createSampleJobs() {
-            debug('Creating sample jobs in Quantum Jobs Firebase...');
+            debug('Creating sample jobs in Firebase...');
             
             // Show loading indicator
             document.getElementById('jobsLoading').style.display = 'flex';
             document.getElementById('jobsEmptyState').style.display = 'none';
             
             // Create 5 sample jobs
-            const batch = quantumJobsDb.batch();
-            const jobsRef = quantumJobsDb.collection('quantumJobs');
+            const batch = db.batch();
+            const jobsRef = db.collection('quantumJobs');
             
             for (let i = 0; i < 5; i++) {
                 const jobRef = jobsRef.doc();
@@ -1175,7 +1077,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             }
             
             batch.commit().then(() => {
-                debug('Sample jobs created successfully in Quantum Jobs Firebase');
+                debug('Sample jobs created successfully in Firebase');
                 document.getElementById('jobsLoading').style.display = 'none';
             }).catch(error => {
                 console.error('Error creating sample jobs:', error);
@@ -1185,19 +1087,19 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             });
         }
         
-        // Initialize jobs in Quantum Jobs Firebase
+        // Initialize jobs in Firebase
         function initializeFirebaseJobs() {
-            debug('Initializing Quantum Jobs Firebase...');
+            debug('Initializing Firebase jobs...');
             
             // Check if jobs collection exists
-            quantumJobsDb.collection('quantumJobs').get().then(snapshot => {
-                debug(`Found ${snapshot.size} jobs in Quantum Jobs Firestore`);
+            db.collection('quantumJobs').get().then(snapshot => {
+                debug(`Found ${snapshot.size} jobs in Firestore`);
                 
                 if (snapshot.empty) {
                     debug('No jobs found, creating initial data...');
                     // If no jobs exist, create some initial data
-                    const batch = quantumJobsDb.batch();
-                    const jobsRef = quantumJobsDb.collection('quantumJobs');
+                    const batch = db.batch();
+                    const jobsRef = db.collection('quantumJobs');
                     
                     for (let i = 0; i < 5; i++) {
                         const jobRef = jobsRef.doc();
@@ -1208,7 +1110,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                     }
                     
                     batch.commit().then(() => {
-                        debug('Initial jobs created in Quantum Jobs Firebase');
+                        debug('Initial jobs created in Firebase');
                     }).catch(error => {
                         console.error('Error creating initial jobs:', error);
                         debug('Error creating initial jobs: ' + error.message);
@@ -1220,15 +1122,15 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             });
         }
         
-        // Load jobs from Quantum Jobs Firebase
+        // Load jobs from Firebase
         function loadJobsFromFirebase() {
-            debug('Loading jobs from Quantum Jobs Firebase...');
+            debug('Loading jobs from Firebase...');
             
             // Show loading indicator
             document.getElementById('jobsLoading').style.display = 'flex';
             document.getElementById('jobsEmptyState').style.display = 'none';
             
-            quantumJobsDb.collection('quantumJobs').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+            db.collection('quantumJobs').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
                 debug(`Snapshot received with ${snapshot.size} documents`);
                 
                 jobs = [];
@@ -1359,7 +1261,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         
         // View job details
         function viewJobDetails(jobId) {
-            quantumJobsDb.collection('quantumJobs').doc(jobId).get().then(doc => {
+            db.collection('quantumJobs').doc(jobId).get().then(doc => {
                 if (doc.exists) {
                     const job = doc.data();
                     alert(`Job Details:\n\nID: ${job.id}\nAlgorithm: ${job.algorithm}\nQubits: ${job.qubits}\nBackend: ${job.backend}\nStatus: ${job.status}\n\nIn a real implementation, this would show detailed job information and quantum circuit visualization.`);
@@ -1373,10 +1275,10 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         // Refresh data
         function refreshData() {
             debug('Refreshing data...');
-            // Add a new job to Quantum Jobs Firebase
+            // Add a new job to Firebase
             const newJob = generateQuantumJob();
-            quantumJobsDb.collection('quantumJobs').add(newJob).then(() => {
-                debug('New job added to Quantum Jobs Firebase');
+            db.collection('quantumJobs').add(newJob).then(() => {
+                debug('New job added to Firebase');
             }).catch(error => {
                 console.error('Error adding new job:', error);
                 debug('Error adding new job: ' + error.message);
@@ -1393,13 +1295,13 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 const job = jobs[randomIndex];
                 
                 if (job && job.status === 'running' && Math.random() > 0.7) {
-                    quantumJobsDb.collection('quantumJobs').doc(job.id).update({
+                    db.collection('quantumJobs').doc(job.id).update({
                         status: 'completed'
                     }).catch(error => {
                         console.error('Error updating job status:', error);
                     });
                 } else if (job && job.status === 'queued' && Math.random() > 0.5) {
-                    quantumJobsDb.collection('quantumJobs').doc(job.id).update({
+                    db.collection('quantumJobs').doc(job.id).update({
                         status: 'running'
                     }).catch(error => {
                         console.error('Error updating job status:', error);
