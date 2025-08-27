@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <style>
+        /* All existing CSS remains unchanged */
         :root {
             --primary: #00d9ff;
             --secondary: #7b2ff7;
@@ -454,6 +455,20 @@
             margin-bottom: 16px;
             opacity: 0.7;
         }
+        .debug-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 300px;
+            z-index: 1001;
+            display: none;
+        }
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -469,6 +484,9 @@
 <body>
     <div class="quantum-bg" id="quantumBg"></div>
     <div class="grid-bg"></div>
+    
+    <!-- Debug Info -->
+    <div id="debugInfo" class="debug-info"></div>
     
     <!-- Firebase Status Indicators -->
     <div id="authFirebaseStatus" class="firebase-status firebase-disconnected" style="bottom: 80px;">
@@ -535,6 +553,9 @@
                             <i class="fas fa-user-circle text-cyan-400"></i>
                             <span id="userEmail" class="text-sm"></span>
                         </div>
+                        <button onclick="createSampleJobs()" class="btn btn-primary">
+                            <i class="fas fa-plus mr-2"></i>Create Jobs
+                        </button>
                         <button onclick="refreshData()" class="btn btn-primary">
                             <i class="fas fa-sync-alt mr-2"></i>Refresh
                         </button>
@@ -658,7 +679,7 @@
                         </div>
                         <div id="jobsEmptyState" class="empty-state" style="display: none;">
                             <i class="fas fa-atom"></i>
-                            <p>No quantum jobs found. Click "Refresh" to create new jobs.</p>
+                            <p>No quantum jobs found. Click "Create Jobs" to add sample jobs.</p>
                         </div>
                     </div>
                 </div>
@@ -808,6 +829,18 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         const app = firebase.initializeApp(firebaseConfig);
         const auth = app.auth();
         const db = app.firestore();
+        
+        // Debug function
+        function debug(message) {
+            console.log(message);
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = 'block';
+            debugInfo.innerHTML += message + '<br>';
+            setTimeout(() => {
+                debugInfo.style.display = 'none';
+                debugInfo.innerHTML = '';
+            }, 5000);
+        }
         
         // Login state
         let isLoginMode = true;
@@ -1041,46 +1074,90 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             };
         }
         
+        // Create sample jobs
+        function createSampleJobs() {
+            debug('Creating sample jobs...');
+            
+            // Show loading indicator
+            document.getElementById('jobsLoading').style.display = 'flex';
+            document.getElementById('jobsEmptyState').style.display = 'none';
+            
+            // Create 5 sample jobs
+            const batch = db.batch();
+            const jobsRef = db.collection('quantumJobs');
+            
+            for (let i = 0; i < 5; i++) {
+                const jobRef = jobsRef.doc();
+                const job = generateQuantumJob();
+                job.id = jobRef.id;
+                batch.set(jobRef, job);
+                debug(`Creating job: ${job.algorithm}`);
+            }
+            
+            batch.commit().then(() => {
+                debug('Sample jobs created successfully');
+                document.getElementById('jobsLoading').style.display = 'none';
+            }).catch(error => {
+                console.error('Error creating sample jobs:', error);
+                debug('Error creating sample jobs: ' + error.message);
+                document.getElementById('jobsLoading').style.display = 'none';
+                alert('Error creating sample jobs: ' + error.message);
+            });
+        }
+        
         // Initialize jobs in Database Firebase
         function initializeFirebaseJobs() {
+            debug('Initializing Firebase jobs...');
+            
             // Check if jobs collection exists
             db.collection('quantumJobs').get().then(snapshot => {
+                debug(`Found ${snapshot.size} jobs in Firestore`);
+                
                 if (snapshot.empty) {
+                    debug('No jobs found, creating initial data...');
                     // If no jobs exist, create some initial data
                     const batch = db.batch();
                     const jobsRef = db.collection('quantumJobs');
                     
-                    for (let i = 0; i < 10; i++) {
+                    for (let i = 0; i < 5; i++) {
                         const jobRef = jobsRef.doc();
                         const job = generateQuantumJob();
                         job.id = jobRef.id;
                         batch.set(jobRef, job);
+                        debug(`Creating initial job: ${job.algorithm}`);
                     }
                     
                     batch.commit().then(() => {
-                        console.log('Initial jobs created in Database Firebase');
+                        debug('Initial jobs created in Database Firebase');
                     }).catch(error => {
                         console.error('Error creating initial jobs:', error);
+                        debug('Error creating initial jobs: ' + error.message);
                     });
                 }
             }).catch(error => {
                 console.error('Error checking jobs collection:', error);
+                debug('Error checking jobs collection: ' + error.message);
             });
         }
         
         // Load jobs from Database Firebase
         function loadJobsFromFirebase() {
+            debug('Loading jobs from Firebase...');
+            
             // Show loading indicator
             document.getElementById('jobsLoading').style.display = 'flex';
             document.getElementById('jobsEmptyState').style.display = 'none';
             
             db.collection('quantumJobs').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+                debug(`Snapshot received with ${snapshot.size} documents`);
+                
                 jobs = [];
                 snapshot.forEach(doc => {
                     jobs.push({
                         id: doc.id,
                         ...doc.data()
                     });
+                    debug(`Loaded job: ${doc.data().algorithm}`);
                 });
                 
                 // Hide loading indicator
@@ -1089,14 +1166,17 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 // Show empty state if no jobs
                 if (jobs.length === 0) {
                     document.getElementById('jobsEmptyState').style.display = 'block';
+                    debug('No jobs found, showing empty state');
                 } else {
                     document.getElementById('jobsEmptyState').style.display = 'none';
+                    debug(`Loaded ${jobs.length} jobs`);
                 }
                 
                 renderJobsTable();
                 updateStatistics();
             }, error => {
                 console.error('Error loading jobs:', error);
+                debug('Error loading jobs: ' + error.message);
                 document.getElementById('jobsLoading').style.display = 'none';
                 alert('Error loading quantum jobs: ' + error.message);
             });
@@ -1104,6 +1184,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         
         // Render jobs table
         function renderJobsTable() {
+            debug('Rendering jobs table...');
             const tbody = document.getElementById('jobsTableBody');
             tbody.innerHTML = '';
             jobs.forEach(job => {
@@ -1133,7 +1214,9 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                     </td>
                 `;
                 tbody.appendChild(row);
+                debug(`Rendered job row: ${job.algorithm}`);
             });
+            debug(`Rendered ${jobs.length} job rows`);
         }
         
         // Update statistics
@@ -1144,6 +1227,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             document.getElementById('activeJobs').textContent = activeJobs;
             document.getElementById('queuedJobs').textContent = queuedJobs;
             document.getElementById('qubitsUsed').textContent = totalQubits;
+            debug(`Updated statistics: Active=${activeJobs}, Queued=${queuedJobs}, Qubits=${totalQubits}`);
         }
         
         // Tab switching
@@ -1208,12 +1292,14 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
         
         // Refresh data
         function refreshData() {
+            debug('Refreshing data...');
             // Add a new job to Database Firebase
             const newJob = generateQuantumJob();
             db.collection('quantumJobs').add(newJob).then(() => {
-                console.log('New job added to Database Firebase');
+                debug('New job added to Database Firebase');
             }).catch(error => {
                 console.error('Error adding new job:', error);
+                debug('Error adding new job: ' + error.message);
                 alert('Error refreshing data: ' + error.message);
             });
         }
