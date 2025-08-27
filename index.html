@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <style>
+        /* All existing CSS remains unchanged */
         :root {
             --primary: #00d9ff;
             --secondary: #7b2ff7;
@@ -22,13 +23,11 @@
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Rajdhani', sans-serif;
             background: var(--darker);
@@ -36,7 +35,6 @@
             overflow-x: hidden;
             position: relative;
         }
-
         /* Quantum particle animation background */
         .quantum-bg {
             position: fixed;
@@ -47,7 +45,6 @@
             z-index: -1;
             overflow: hidden;
         }
-
         .quantum-particle {
             position: absolute;
             width: 4px;
@@ -57,7 +54,6 @@
             box-shadow: 0 0 10px var(--primary);
             animation: float 20s infinite linear;
         }
-
         @keyframes float {
             0% {
                 transform: translateY(100vh) translateX(0);
@@ -74,7 +70,124 @@
                 opacity: 0;
             }
         }
-
+        /* Login form styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-form {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        .form-group input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--light);
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 217, 255, 0.4);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .btn-secondary:hover {
+            background: rgba(0, 217, 255, 0.1);
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        .toggle-form:hover {
+            text-decoration: underline;
+        }
+        /* Dashboard styles (hidden by default) */
+        .dashboard-container {
+            display: none;
+        }
         /* Circuit visualization */
         .circuit-container {
             background: rgba(0, 0, 0, 0.3);
@@ -85,13 +198,11 @@
             position: relative;
             overflow: hidden;
         }
-
         .circuit-line {
             position: relative;
             height: 40px;
             margin: 10px 0;
         }
-
         .circuit-line::before {
             content: '';
             position: absolute;
@@ -102,7 +213,6 @@
             background: var(--primary);
             transform: translateY(-50%);
         }
-
         .qubit-label {
             position: absolute;
             left: 0;
@@ -114,7 +224,6 @@
             font-size: 14px;
             z-index: 1;
         }
-
         .gate {
             position: absolute;
             top: 50%;
@@ -131,12 +240,10 @@
             box-shadow: 0 0 20px rgba(123, 47, 247, 0.5);
             transition: all 0.3s ease;
         }
-
         .gate:hover {
             transform: translateY(-50%) scale(1.1);
             box-shadow: 0 0 30px rgba(123, 47, 247, 0.8);
         }
-
         /* Code editor styling */
         .code-editor {
             background: #1e1e1e;
@@ -149,7 +256,6 @@
             overflow-x: auto;
             position: relative;
         }
-
         .code-editor::before {
             content: 'Qiskit Code';
             position: absolute;
@@ -159,12 +265,10 @@
             font-size: 12px;
             font-weight: bold;
         }
-
         .keyword { color: #569cd6; }
         .string { color: #ce9178; }
         .function { color: #dcdcaa; }
         .comment { color: #6a9955; }
-
         /* Quantum state visualization */
         .quantum-state {
             display: flex;
@@ -174,7 +278,6 @@
             height: 200px;
             position: relative;
         }
-
         .state-circle {
             width: 150px;
             height: 150px;
@@ -183,12 +286,10 @@
             position: relative;
             animation: rotate 10s linear infinite;
         }
-
         @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
         .state-vector {
             position: absolute;
             width: 100%;
@@ -197,7 +298,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .state-arrow {
             width: 2px;
             height: 70px;
@@ -205,7 +305,6 @@
             position: relative;
             transform-origin: bottom;
         }
-
         .state-arrow::after {
             content: '';
             position: absolute;
@@ -217,7 +316,6 @@
             border-right: 6px solid transparent;
             border-bottom: 10px solid var(--accent);
         }
-
         /* Firebase specific styles */
         .firebase-status {
             position: fixed;
@@ -229,19 +327,16 @@
             z-index: 1000;
             transition: all 0.3s ease;
         }
-
         .firebase-connected {
             background: rgba(16, 185, 129, 0.2);
             color: #10b981;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
-
         .firebase-disconnected {
             background: rgba(239, 68, 68, 0.2);
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
-
         /* Reusing previous styles */
         .grid-bg {
             position: fixed;
@@ -256,12 +351,10 @@
             z-index: -1;
             animation: grid-move 20s linear infinite;
         }
-
         @keyframes grid-move {
             0% { transform: translate(0, 0); }
             100% { transform: translate(50px, 50px); }
         }
-
         header {
             background: linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(5, 7, 20, 0.9) 100%);
             backdrop-filter: blur(10px);
@@ -270,12 +363,10 @@
             position: relative;
             overflow: hidden;
         }
-
         h1, h2, h3 {
             font-family: 'Orbitron', sans-serif;
             letter-spacing: 1px;
         }
-
         .card {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -286,34 +377,10 @@
             position: relative;
             transition: all 0.3s ease;
         }
-
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 35px rgba(0, 217, 255, 0.2);
         }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 217, 255, 0.4);
-        }
-
         input, select, textarea {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--glass-border);
@@ -323,19 +390,16 @@
             transition: all 0.3s ease;
             width: 100%;
         }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
         }
-
         .tab-container {
             display: flex;
             border-bottom: 2px solid var(--glass-border);
             margin-bottom: 20px;
         }
-
         .tab {
             padding: 15px 30px;
             cursor: pointer;
@@ -345,11 +409,9 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-
         .tab.active {
             color: var(--primary);
         }
-
         .tab.active::after {
             content: '';
             position: absolute;
@@ -359,15 +421,30 @@
             height: 2px;
             background: var(--primary);
         }
-
         .tab-content {
             display: none;
         }
-
         .tab-content.active {
             display: block;
         }
-
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 3px solid rgba(0, 217, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -384,299 +461,516 @@
     <div class="quantum-bg" id="quantumBg"></div>
     <div class="grid-bg"></div>
     
-    <!-- Firebase Status Indicator -->
-    <div id="firebaseStatus" class="firebase-status firebase-disconnected">
-        <i class="fas fa-database mr-2"></i>
-        <span id="firebaseStatusText">Connecting to Firebase...</span>
+    <!-- Firebase Status Indicators -->
+    <div id="authFirebaseStatus" class="firebase-status firebase-disconnected" style="bottom: 80px;">
+        <i class="fas fa-user-shield mr-2"></i>
+        <span id="authFirebaseStatusText">Auth Firebase...</span>
     </div>
     
-    <!-- Header -->
-    <header class="py-6 relative z-10">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="flex items-center space-x-4 mb-4 md:mb-0">
-                    <i class="fas fa-atom text-4xl" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-bold" style="color: var(--primary);">Quantum Computing Dashboard</h1>
-                        <p class="text-cyan-400 text-sm">Powered by Qiskit & IBM Quantum</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                        <span class="text-sm">Live Quantum Jobs</span>
-                    </div>
-                    <button onclick="refreshData()" class="btn btn-primary">
-                        <i class="fas fa-sync-alt mr-2"></i>Refresh
-                    </button>
-                </div>
+    <div id="dbFirebaseStatus" class="firebase-status firebase-disconnected">
+        <i class="fas fa-database mr-2"></i>
+        <span id="dbFirebaseStatusText">DB Firebase...</span>
+    </div>
+    
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-form">
+            <div class="login-header">
+                <i class="fas fa-atom text-4xl mb-4" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
+                <h1>Quantum Computing Dashboard</h1>
+                <p class="text-cyan-400">Sign in to access your quantum workspace</p>
             </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required>
+                    <div id="emailError" class="error-message">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                    <div id="passwordError" class="error-message">Password must be at least 6 characters</div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <button type="button" id="toggleForm" class="btn btn-secondary">Create Account</button>
+                </div>
+            </form>
+            
+            <div id="toggleText" class="toggle-form">Don't have an account? Sign up</div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Tab Navigation -->
-        <div class="tab-container">
-            <div class="tab active" onclick="switchTab('dashboard')">
-                <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-            </div>
-            <div class="tab" onclick="switchTab('qiskit')">
-                <i class="fas fa-code mr-2"></i>Qiskit Lab
-            </div>
-            <div class="tab" onclick="switchTab('learn')">
-                <i class="fas fa-graduation-cap mr-2"></i>Learn Quantum
-            </div>
-        </div>
-
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content active">
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="card p-6">
-                    <div class="flex items-center justify-between">
+    </div>
+    
+    <!-- Dashboard Container (hidden by default) -->
+    <div id="dashboardContainer" class="dashboard-container">
+        <!-- Header -->
+        <header class="py-6 relative z-10">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                        <i class="fas fa-atom text-4xl" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent;"></i>
                         <div>
-                            <p class="text-cyan-400 text-sm mb-1">Active Jobs</p>
-                            <p class="text-3xl font-bold" id="activeJobs">0</p>
-                        </div>
-                        <div class="bg-blue-500 bg-opacity-20 p-3 rounded-lg">
-                            <i class="fas fa-play-circle text-blue-400 text-2xl"></i>
+                            <h1 class="text-2xl md:text-3xl font-bold" style="color: var(--primary);">Quantum Computing Dashboard</h1>
+                            <p class="text-cyan-400 text-sm">Powered by Qiskit & IBM Quantum</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="card p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-yellow-400 text-sm mb-1">Queued Jobs</p>
-                            <p class="text-3xl font-bold" id="queuedJobs">0</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-sm">Live Quantum Jobs</span>
                         </div>
-                        <div class="bg-yellow-500 bg-opacity-20 p-3 rounded-lg">
-                            <i class="fas fa-clock text-yellow-400 text-2xl"></i>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-user-circle text-cyan-400"></i>
+                            <span id="userEmail" class="text-sm"></span>
                         </div>
-                    </div>
-                </div>
-
-                <div class="card p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-400 text-sm mb-1">Qubits Used</p>
-                            <p class="text-3xl font-bold" id="qubitsUsed">0</p>
-                        </div>
-                        <div class="bg-green-500 bg-opacity-20 p-3 rounded-lg">
-                            <i class="fas fa-microchip text-green-400 text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-purple-400 text-sm mb-1">Quantum Volume</p>
-                            <p class="text-3xl font-bold" id="quantumVolume">128</p>
-                        </div>
-                        <div class="bg-purple-500 bg-opacity-20 p-3 rounded-lg">
-                            <i class="fas fa-cube text-purple-400 text-2xl"></i>
-                        </div>
+                        <button onclick="refreshData()" class="btn btn-primary">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                        <button onclick="logout()" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Quantum Circuit Visualization -->
-            <div class="card p-6 mb-8">
-                <h3 class="text-lg font-semibold mb-4">Live Quantum Circuit</h3>
-                <div class="circuit-container">
-                    <div class="circuit-line">
-                        <span class="qubit-label">q0</span>
-                        <div class="gate" style="left: 100px;">H</div>
-                        <div class="gate" style="left: 200px;">X</div>
-                    </div>
-                    <div class="circuit-line">
-                        <span class="qubit-label">q1</span>
-                        <div class="gate" style="left: 150px;">CX</div>
-                    </div>
-                    <div class="circuit-line">
-                        <span class="qubit-label">q2</span>
-                        <div class="gate" style="left: 100px;">H</div>
-                        <div class="gate" style="left: 250px;">Z</div>
-                    </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab active" onclick="switchTab('dashboard', event)">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </div>
+                <div class="tab" onclick="switchTab('qiskit', event)">
+                    <i class="fas fa-code mr-2"></i>Qiskit Lab
+                </div>
+                <div class="tab" onclick="switchTab('learn', event)">
+                    <i class="fas fa-graduation-cap mr-2"></i>Learn Quantum
                 </div>
             </div>
-
-            <!-- Jobs Table -->
-            <div class="card mb-8 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-800">
-                    <h2 class="text-xl font-semibold">Current Quantum Jobs</h2>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-gray-800">
-                                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Job ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Algorithm</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Qubits</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Backend</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="jobsTableBody" class="divide-y divide-gray-800">
-                            <!-- Jobs will be dynamically inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Qiskit Lab Tab -->
-        <div id="qiskit" class="tab-content">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="card p-6">
-                        <h3 class="text-lg font-semibold mb-4">Qiskit Code Editor</h3>
-                        <div class="code-editor">
-                            <pre><code><span class="comment"># Quantum Circuit Example</span>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-cyan-400 text-sm mb-1">Active Jobs</p>
+                                <p class="text-3xl font-bold" id="activeJobs">0</p>
+                            </div>
+                            <div class="bg-blue-500 bg-opacity-20 p-3 rounded-lg">
+                                <i class="fas fa-play-circle text-blue-400 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-yellow-400 text-sm mb-1">Queued Jobs</p>
+                                <p class="text-3xl font-bold" id="queuedJobs">0</p>
+                            </div>
+                            <div class="bg-yellow-500 bg-opacity-20 p-3 rounded-lg">
+                                <i class="fas fa-clock text-yellow-400 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-400 text-sm mb-1">Qubits Used</p>
+                                <p class="text-3xl font-bold" id="qubitsUsed">0</p>
+                            </div>
+                            <div class="bg-green-500 bg-opacity-20 p-3 rounded-lg">
+                                <i class="fas fa-microchip text-green-400 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-400 text-sm mb-1">Quantum Volume</p>
+                                <p class="text-3xl font-bold" id="quantumVolume">128</p>
+                            </div>
+                            <div class="bg-purple-500 bg-opacity-20 p-3 rounded-lg">
+                                <i class="fas fa-cube text-purple-400 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quantum Circuit Visualization -->
+                <div class="card p-6 mb-8">
+                    <h3 class="text-lg font-semibold mb-4">Live Quantum Circuit</h3>
+                    <div class="circuit-container">
+                        <div class="circuit-line">
+                            <span class="qubit-label">q0</span>
+                            <div class="gate" style="left: 100px;">H</div>
+                            <div class="gate" style="left: 200px;">X</div>
+                        </div>
+                        <div class="circuit-line">
+                            <span class="qubit-label">q1</span>
+                            <div class="gate" style="left: 150px;">CX</div>
+                        </div>
+                        <div class="circuit-line">
+                            <span class="qubit-label">q2</span>
+                            <div class="gate" style="left: 100px;">H</div>
+                            <div class="gate" style="left: 250px;">Z</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Jobs Table -->
+                <div class="card mb-8 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-800">
+                        <h2 class="text-xl font-semibold">Current Quantum Jobs</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-800">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Job ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Algorithm</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Qubits</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Backend</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="jobsTableBody" class="divide-y divide-gray-800">
+                                <!-- Jobs will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                        <div id="jobsLoading" class="loading-indicator" style="display: none;">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Qiskit Lab Tab -->
+            <div id="qiskit" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <div class="card p-6">
+                            <h3 class="text-lg font-semibold mb-4">Qiskit Code Editor</h3>
+                            <div class="code-editor">
+                                <pre><code><span class="comment"># Quantum Circuit Example</span>
 <span class="keyword">from</span> qiskit <span class="keyword">import</span> QuantumCircuit, Aer, execute
 <span class="keyword">from</span> qiskit.visualization <span class="keyword">import</span> plot_bloch_multivector
-
 <span class="comment"># Create a quantum circuit with 3 qubits</span>
 qc = <span class="function">QuantumCircuit</span>(3)
-
 <span class="comment"># Apply Hadamard gate to create superposition</span>
 qc.<span class="function">h</span>(0)
 qc.<span class="function">h</span>(1)
-
 <span class="comment"># Create entanglement</span>
 qc.<span class="function">cx</span>(0, 2)
-
 <span class="comment"># Measure the qubits</span>
 qc.<span class="function">measure_all</span>()
-
 <span class="comment"># Execute on simulator</span>
 simulator = Aer.<span class="function">get_backend</span>(<span class="string">'qasm_simulator'</span>)
 result = <span class="function">execute</span>(qc, simulator, shots=1000).<span class="function">result</span>()
 counts = result.<span class="function">get_counts</span>(qc)</code></pre>
+                            </div>
+                            <button onclick="runQuantumCode()" class="btn btn-primary mt-4">
+                                <i class="fas fa-play mr-2"></i>Run Code
+                            </button>
                         </div>
-                        <button onclick="runQuantumCode()" class="btn btn-primary mt-4">
-                            <i class="fas fa-play mr-2"></i>Run Code
-                        </button>
                     </div>
-                </div>
-                <div>
-                    <div class="card p-6">
-                        <h3 class="text-lg font-semibold mb-4">Quantum State Visualization</h3>
-                        <div class="quantum-state">
-                            <div class="state-circle">
-                                <div class="state-vector">
-                                    <div class="state-arrow" style="transform: rotate(45deg);"></div>
+                    <div>
+                        <div class="card p-6">
+                            <h3 class="text-lg font-semibold mb-4">Quantum State Visualization</h3>
+                            <div class="quantum-state">
+                                <div class="state-circle">
+                                    <div class="state-vector">
+                                        <div class="state-arrow" style="transform: rotate(45deg);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <p class="text-sm text-gray-400">Current State: |ψ⟩ = (|000⟩ + |101⟩)/√2</p>
+                            </div>
+                        </div>
+                        <div class="card p-6 mt-6">
+                            <h3 class="text-lg font-semibold mb-4">Measurement Results</h3>
+                            <div id="measurementResults" class="space-y-2">
+                                <div class="flex justify-between items-center p-2 bg-gray-800 rounded">
+                                    <span>|000⟩</span>
+                                    <span class="text-cyan-400">50%</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-gray-800 rounded">
+                                    <span>|101⟩</span>
+                                    <span class="text-cyan-400">50%</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-center mt-4">
-                            <p class="text-sm text-gray-400">Current State: |ψ⟩ = (|000⟩ + |101⟩)/√2</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Learn Quantum Tab -->
+            <div id="learn" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold mb-4">Quantum Basics</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-medium text-cyan-400">Qubits</h4>
+                                <p class="text-sm text-gray-400">Unlike classical bits, qubits can exist in superposition of |0⟩ and |1⟩ states.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-cyan-400">Superposition</h4>
+                                <p class="text-sm text-gray-400">A quantum state that is a linear combination of basis states.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-cyan-400">Entanglement</h4>
+                                <p class="text-sm text-gray-400">Quantum correlation where qubits cannot be described independently.</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="card p-6 mt-6">
-                        <h3 class="text-lg font-semibold mb-4">Measurement Results</h3>
-                        <div id="measurementResults" class="space-y-2">
-                            <div class="flex justify-between items-center p-2 bg-gray-800 rounded">
-                                <span>|000⟩</span>
-                                <span class="text-cyan-400">50%</span>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold mb-4">Quantum Gates</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">H</div>
+                                <div>
+                                    <p class="font-medium">Hadamard Gate</p>
+                                    <p class="text-xs text-gray-400">Creates superposition</p>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center p-2 bg-gray-800 rounded">
-                                <span>|101⟩</span>
-                                <span class="text-cyan-400">50%</span>
+                            <div class="flex items-center space-x-3">
+                                <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">X</div>
+                                <div>
+                                    <p class="font-medium">Pauli-X Gate</p>
+                                    <p class="text-xs text-gray-400">Quantum NOT gate</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">CX</div>
+                                <div>
+                                    <p class="font-medium">CNOT Gate</p>
+                                    <p class="text-xs text-gray-400">Creates entanglement</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold mb-4">Quantum Algorithms</h3>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-gray-800 rounded">
+                                <p class="font-medium">Shor's Algorithm</p>
+                                <p class="text-xs text-gray-400">Integer factorization</p>
+                            </div>
+                            <div class="p-3 bg-gray-800 rounded">
+                                <p class="font-medium">Grover's Algorithm</p>
+                                <p class="text-xs text-gray-400">Quantum search</p>
+                            </div>
+                            <div class="p-3 bg-gray-800 rounded">
+                                <p class="font-medium">VQE Algorithm</p>
+                                <p class="text-xs text-gray-400">Quantum chemistry</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Learn Quantum Tab -->
-        <div id="learn" class="tab-content">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="card p-6">
-                    <h3 class="text-lg font-semibold mb-4">Quantum Basics</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <h4 class="font-medium text-cyan-400">Qubits</h4>
-                            <p class="text-sm text-gray-400">Unlike classical bits, qubits can exist in superposition of |0⟩ and |1⟩ states.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-medium text-cyan-400">Superposition</h4>
-                            <p class="text-sm text-gray-400">A quantum state that is a linear combination of basis states.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-medium text-cyan-400">Entanglement</h4>
-                            <p class="text-sm text-gray-400">Quantum correlation where qubits cannot be described independently.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card p-6">
-                    <h3 class="text-lg font-semibold mb-4">Quantum Gates</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center space-x-3">
-                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">H</div>
-                            <div>
-                                <p class="font-medium">Hadamard Gate</p>
-                                <p class="text-xs text-gray-400">Creates superposition</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">X</div>
-                            <div>
-                                <p class="font-medium">Pauli-X Gate</p>
-                                <p class="text-xs text-gray-400">Quantum NOT gate</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">CX</div>
-                            <div>
-                                <p class="font-medium">CNOT Gate</p>
-                                <p class="text-xs text-gray-400">Creates entanglement</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card p-6">
-                    <h3 class="text-lg font-semibold mb-4">Quantum Algorithms</h3>
-                    <div class="space-y-3">
-                        <div class="p-3 bg-gray-800 rounded">
-                            <p class="font-medium">Shor's Algorithm</p>
-                            <p class="text-xs text-gray-400">Integer factorization</p>
-                        </div>
-                        <div class="p-3 bg-gray-800 rounded">
-                            <p class="font-medium">Grover's Algorithm</p>
-                            <p class="text-xs text-gray-400">Quantum search</p>
-                        </div>
-                        <div class="p-3 bg-gray-800 rounded">
-                            <p class="font-medium">VQE Algorithm</p>
-                            <p class="text-xs text-gray-400">Quantum chemistry</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
+        </main>
+    </div>
+    
     <script>
-        // Firebase configuration - replace with your own config
+        // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDibGh8dLXxs1KXwpYgbpsT89GrEkHOCTs",
-  authDomain: "devastating-devolepers.firebaseapp.com",
-  projectId: "devastating-devolepers",
-  storageBucket: "devastating-devolepers.firebasestorage.app",
-  messagingSenderId: "431737862814",
-  appId: "1:431737862814:web:b89abb880e72f25a1ed98f",
-  measurementId: "G-3LD3T3SWRQ"
+            apiKey: "AIzaSyDEP3o3ckNDIzJR_OxcyivAXdCXvq1yFCA",
+            authDomain: "logindevolepers.firebaseapp.com",
+            projectId: "logindevolepers",
+            storageBucket: "logindevolepers.firebasestorage.app",
+            messagingSenderId: "214217647520",
+            appId: "1:214217647520:web:3b4b1468032611c6d5f0c5",
+            measurementId: "G-393TED07X1"
         };
-
+        
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth();
+        const db = app.firestore();
+        
+        // Login state
+        let isLoginMode = true;
+        
+        // Check if user is logged in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboardContainer').style.display = 'block';
+                document.getElementById('userEmail').textContent = user.email;
+                
+                // Initialize dashboard
+                createQuantumParticles();
+                initializeFirebaseJobs();
+                loadJobsFromFirebase();
+                
+                // Start live updates
+                setInterval(simulateLiveUpdates, 5000);
+            } else {
+                // User is signed out
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('dashboardContainer').style.display = 'none';
+            }
+        });
+        
+        // Update Firebase connection status for Auth
+        function updateAuthFirebaseStatus(connected) {
+            const statusElement = document.getElementById('authFirebaseStatus');
+            const statusText = document.getElementById('authFirebaseStatusText');
+            
+            if (connected) {
+                statusElement.className = 'firebase-status firebase-connected';
+                statusText.textContent = 'Auth Firebase Connected';
+            } else {
+                statusElement.className = 'firebase-status firebase-disconnected';
+                statusText.textContent = 'Auth Firebase Disconnected';
+            }
+        }
+        
+        // Update Firebase connection status for DB
+        function updateDbFirebaseStatus(connected) {
+            const statusElement = document.getElementById('dbFirebaseStatus');
+            const statusText = document.getElementById('dbFirebaseStatusText');
+            
+            if (connected) {
+                statusElement.className = 'firebase-status firebase-connected';
+                statusText.textContent = 'DB Firebase Connected';
+            } else {
+                statusElement.className = 'firebase-status firebase-disconnected';
+                statusText.textContent = 'DB Firebase Disconnected';
+            }
+        }
+        
+        // Test Auth Firebase connection
+        auth.onAuthStateChanged(() => {
+            updateAuthFirebaseStatus(true);
+        }, (error) => {
+            console.error('Auth Firebase connection error:', error);
+            updateAuthFirebaseStatus(false);
+        });
+        
+        // Test DB Firebase connection
+        db.collection('test').doc('connection').onSnapshot(() => {
+            updateDbFirebaseStatus(true);
+        }, (error) => {
+            console.error('DB Firebase connection error:', error);
+            updateDbFirebaseStatus(false);
+        });
+        
+        // Login form toggle
+        document.getElementById('toggleForm').addEventListener('click', function() {
+            isLoginMode = !isLoginMode;
+            const formTitle = document.querySelector('.login-header h1');
+            const formSubtitle = document.querySelector('.login-header p');
+            const submitButton = document.querySelector('#loginForm button[type="submit"]');
+            const toggleButton = document.getElementById('toggleForm');
+            const toggleText = document.getElementById('toggleText');
+            
+            if (isLoginMode) {
+                formTitle.textContent = 'Quantum Computing Dashboard';
+                formSubtitle.textContent = 'Sign in to access your quantum workspace';
+                submitButton.textContent = 'Sign In';
+                toggleButton.textContent = 'Create Account';
+                toggleText.textContent = "Don't have an account? Sign up";
+            } else {
+                formTitle.textContent = 'Create Account';
+                formSubtitle.textContent = 'Join the quantum revolution';
+                submitButton.textContent = 'Sign Up';
+                toggleButton.textContent = 'Sign In';
+                toggleText.textContent = 'Already have an account? Sign in';
+            }
+        });
+        
+        // Toggle text click
+        document.getElementById('toggleText').addEventListener('click', function() {
+            document.getElementById('toggleForm').click();
+        });
+        
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Reset error messages
+            document.getElementById('emailError').style.display = 'none';
+            document.getElementById('passwordError').style.display = 'none';
+            
+            // Validate form
+            let isValid = true;
+            
+            if (!email || !email.includes('@')) {
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!password || password.length < 6) {
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Show loading state
+            const submitButton = document.querySelector('#loginForm button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Processing...';
+            submitButton.disabled = true;
+            
+            if (isLoginMode) {
+                // Sign in
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        // Signed in successfully, handled by onAuthStateChanged
+                    })
+                    .catch(error => {
+                        console.error('Login error:', error);
+                        alert('Login failed: ' + error.message);
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                    });
+            } else {
+                // Sign up
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Save user data to Database Firebase
+                        const user = userCredential.user;
+                        return db.collection('users').doc(user.uid).set({
+                            email: user.email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    })
+                    .then(() => {
+                        console.log('User data saved successfully');
+                    })
+                    .catch(error => {
+                        console.error('Signup error:', error);
+                        alert('Signup failed: ' + error.message);
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                    });
+            }
+        });
+        
+        // Logout function
+        function logout() {
+            auth.signOut().then(() => {
+                // Sign-out successful
+            }).catch(error => {
+                console.error('Logout error:', error);
+                alert('Logout failed: ' + error.message);
+            });
+        }
+        
         // Quantum particle animation
         function createQuantumParticles() {
             const container = document.getElementById('quantumBg');
@@ -689,22 +983,8 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 container.appendChild(particle);
             }
         }
-
-        // Update Firebase connection status
-        function updateFirebaseStatus(connected) {
-            const statusElement = document.getElementById('firebaseStatus');
-            const statusText = document.getElementById('firebaseStatusText');
-            
-            if (connected) {
-                statusElement.className = 'firebase-status firebase-connected';
-                statusText.textContent = 'Connected to Firebase';
-            } else {
-                statusElement.className = 'firebase-status firebase-disconnected';
-                statusText.textContent = 'Disconnected from Firebase';
-            }
-        }
-
-        // Initialize Firebase connection
+        
+        // Initialize DB Firebase connection
         db.enablePersistence()
             .catch((err) => {
                 if (err.code == 'failed-precondition') {
@@ -713,22 +993,22 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                     console.log('The current browser does not support persistence.');
                 }
             });
-
-        // Listen for connection state
+        
+        // Listen for DB Firebase connection state
         db.collection('quantumJobs').onSnapshot(() => {
-            updateFirebaseStatus(true);
+            updateDbFirebaseStatus(true);
         }, (error) => {
-            console.error('Firebase connection error:', error);
-            updateFirebaseStatus(false);
+            console.error('DB Firebase connection error:', error);
+            updateDbFirebaseStatus(false);
         });
-
+        
         // Mock data for quantum jobs
         const quantumAlgorithms = ['Grover Search', 'Shor Factoring', 'VQE', 'QAOA', 'Quantum SVM', 'Teleportation'];
         const backends = ['ibmq_manila', 'ibmq_lima', 'ibmq_belem', 'ibm_qasm_simulator'];
         const jobStatuses = ['running', 'queued', 'completed', 'failed'];
         
         let jobs = [];
-
+        
         // Generate random quantum job
         function generateQuantumJob() {
             return {
@@ -740,8 +1020,8 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
         }
-
-        // Initialize jobs in Firebase
+        
+        // Initialize jobs in Database Firebase
         function initializeFirebaseJobs() {
             // Check if jobs collection exists
             db.collection('quantumJobs').get().then(snapshot => {
@@ -758,7 +1038,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                     }
                     
                     batch.commit().then(() => {
-                        console.log('Initial jobs created in Firebase');
+                        console.log('Initial jobs created in Database Firebase');
                     }).catch(error => {
                         console.error('Error creating initial jobs:', error);
                     });
@@ -767,9 +1047,12 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 console.error('Error checking jobs collection:', error);
             });
         }
-
-        // Load jobs from Firebase
+        
+        // Load jobs from Database Firebase
         function loadJobsFromFirebase() {
+            // Show loading indicator
+            document.getElementById('jobsLoading').style.display = 'flex';
+            
             db.collection('quantumJobs').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
                 jobs = [];
                 snapshot.forEach(doc => {
@@ -778,18 +1061,23 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                         ...doc.data()
                     });
                 });
+                
+                // Hide loading indicator
+                document.getElementById('jobsLoading').style.display = 'none';
+                
                 renderJobsTable();
                 updateStatistics();
             }, error => {
                 console.error('Error loading jobs:', error);
+                document.getElementById('jobsLoading').style.display = 'none';
+                alert('Error loading quantum jobs: ' + error.message);
             });
         }
-
+        
         // Render jobs table
         function renderJobsTable() {
             const tbody = document.getElementById('jobsTableBody');
             tbody.innerHTML = '';
-
             jobs.forEach(job => {
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-800 transition-colors';
@@ -800,7 +1088,6 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                     'completed': 'text-blue-400',
                     'failed': 'text-red-400'
                 };
-
                 row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${job.id}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">${job.algorithm}</td>
@@ -820,20 +1107,19 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 tbody.appendChild(row);
             });
         }
-
+        
         // Update statistics
         function updateStatistics() {
             const activeJobs = jobs.filter(job => job.status === 'running').length;
             const queuedJobs = jobs.filter(job => job.status === 'queued').length;
             const totalQubits = jobs.reduce((sum, job) => sum + job.qubits, 0);
-
             document.getElementById('activeJobs').textContent = activeJobs;
             document.getElementById('queuedJobs').textContent = queuedJobs;
             document.getElementById('qubitsUsed').textContent = totalQubits;
         }
-
+        
         // Tab switching
-        function switchTab(tabName) {
+        function switchTab(tabName, event) {
             // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -848,9 +1134,14 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             document.getElementById(tabName).classList.add('active');
             
             // Add active class to clicked tab
-            event.target.classList.add('active');
+            if (event) {
+                event.target.classList.add('active');
+            } else {
+                // Fallback for when called without event
+                document.querySelector(`.tab[onclick="switchTab('${tabName}', event)"]`).classList.add('active');
+            }
         }
-
+        
         // Run quantum code simulation
         function runQuantumCode() {
             const results = document.getElementById('measurementResults');
@@ -873,7 +1164,7 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 </div>
             `;
         }
-
+        
         // View job details
         function viewJobDetails(jobId) {
             db.collection('quantumJobs').doc(jobId).get().then(doc => {
@@ -883,20 +1174,22 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                 }
             }).catch(error => {
                 console.error('Error getting job:', error);
+                alert('Error loading job details: ' + error.message);
             });
         }
-
+        
         // Refresh data
         function refreshData() {
-            // Add a new job to Firebase
+            // Add a new job to Database Firebase
             const newJob = generateQuantumJob();
             db.collection('quantumJobs').add(newJob).then(() => {
-                console.log('New job added to Firebase');
+                console.log('New job added to Database Firebase');
             }).catch(error => {
                 console.error('Error adding new job:', error);
+                alert('Error refreshing data: ' + error.message);
             });
         }
-
+        
         // Simulate live updates
         function simulateLiveUpdates() {
             // Randomly update some job statuses
@@ -919,20 +1212,11 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                     });
                 }
             }
-
             // Occasionally add new jobs
             if (Math.random() > 0.8) {
                 refreshData();
             }
         }
-
-        // Initialize
-        createQuantumParticles();
-        initializeFirebaseJobs();
-        loadJobsFromFirebase();
-
-        // Start live updates
-        setInterval(simulateLiveUpdates, 5000);
     </script>
 </body>
 </html>
