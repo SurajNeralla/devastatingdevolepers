@@ -613,6 +613,9 @@
             <div class="tab" onclick="switchTab('learn', event)">
                 <i class="fas fa-graduation-cap mr-2"></i>Learn Quantum
             </div>
+            <div class="tab" onclick="switchTab('distance', event)">
+                <i class="fas fa-map-marker-alt mr-2"></i>Distance Selection
+            </div>
         </div>
         
         <!-- Dashboard Tab -->
@@ -909,6 +912,33 @@ measure q -> c;</textarea>
                         <div class="p-3 bg-gray-800 rounded">
                             <p class="font-medium">VQE Algorithm</p>
                             <p class="text-xs text-gray-400">Quantum chemistry</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Distance Selection Tab -->
+        <div id="distance" class="tab-content">
+            <div class="card p-6 mb-8">
+                <h3 class="text-lg font-semibold mb-4">Simple Distance-Based Backend Selection</h3>
+                <p class="text-gray-400 mb-6">Select your location to find the nearest quantum computing backends.</p>
+                
+                <div class="mb-6">
+                    <div class="flex gap-4 mb-4">
+                        <input type="text" id="userLocation" placeholder="Enter your location (e.g., New York, USA)" class="flex-1">
+                        <button onclick="detectUserLocation()" class="btn btn-primary">
+                            <i class="fas fa-location-arrow mr-2"></i>Use My Location
+                        </button>
+                        <button onclick="findNearestBackends()" class="btn btn-primary">
+                            <i class="fas fa-search mr-2"></i>Find Nearest
+                        </button>
+                    </div>
+                    
+                    <div id="backendResults">
+                        <div class="text-center py-10 text-gray-400">
+                            <i class="fas fa-server text-4xl mb-4"></i>
+                            <p>Results will appear here after location selection</p>
                         </div>
                     </div>
                 </div>
@@ -1388,7 +1418,52 @@ measure q -> c;</textarea>
             'Quantum Agility Management Analysis': 0.8,
             'Quantum Responsiveness Management Analysis': 0.9,
             'Quantum Robustness Management Analysis': 0.8,
-            'Quantum Stability Management Analysis': 0.9
+            'Quantum Stability Management Analysis': 0.9,
+            'Quantum Performance Management Analysis': 0.8,
+            'Quantum Efficiency Management Analysis': 0.9,
+            'Quantum Sustainability Management Analysis': 0.8,
+            'Quantum Reliability Management Analysis': 0.9,
+            'Quantum Availability Management Analysis': 0.8,
+            'Quantum Maintainability Management Analysis': 0.9,
+            'Quantum Serviceability Management Analysis': 0.8,
+            'Quantum Usability Management Analysis': 0.9,
+            'Quantum Accessibility Management Analysis': 0.8,
+            'Quantum Affordability Management Analysis': 0.9,
+            'Quantum Acceptability Management Analysis': 0.8,
+            'Quantum Adoptability Management Analysis': 0.9,
+            'Quantum Adaptivity Management Analysis': 0.8,
+            'Quantum Learnability Management Analysis': 0.9,
+            'Quantum Teachability Management Analysis': 0.8,
+            'Quantum Understandability Management Analysis': 0.9,
+            'Quantum Comprehensibility Management Analysis': 0.8,
+            'Quantum Interpretability Management Analysis': 0.9,
+            'Quantum Explainability Management Analysis': 0.8,
+            'Quantum Transparency Management Analysis': 0.9,
+            'Quantum Accountability Management Analysis': 0.8,
+            'Quantum Responsibility Management Analysis': 0.9,
+            'Quantum Liability Management Analysis': 0.8,
+            'Quantum Credibility Management Analysis': 0.9,
+            'Quantum Trustworthiness Management Analysis': 0.8,
+            'Quantum Dependability Management Analysis': 0.9,
+            'Quantum Reliability Management Analysis': 0.8,
+            'Quantum Safety Management Analysis': 0.9,
+            'Quantum Security Management Analysis': 0.8,
+            'Quantum Privacy Management Analysis': 0.9,
+            'Quantum Protection Management Analysis': 0.8,
+            'Quantum Prevention Management Analysis': 0.9,
+            'Quantum Detection Management Analysis': 0.8,
+            'Quantum Response Management Analysis': 0.9,
+            'Quantum Recovery Management Analysis': 0.8,
+            'Quantum Resilience Management Analysis': 0.9,
+            'Quantum Adaptability Management Analysis': 0.8,
+            'Quantum Scalability Management Analysis': 0.9,
+            'Quantum Interoperability Management Analysis': 0.8,
+            'Quantum Modularity Management Analysis': 0.9,
+            'Quantum Flexibility Management Analysis': 0.8,
+            'Quantum Agility Management Analysis': 0.9,
+            'Quantum Responsiveness Management Analysis': 0.8,
+            'Quantum Robustness Management Analysis': 0.9,
+            'Quantum Stability Management Analysis': 0.8
         };
         
         const backends = ['ibmq_manila', 'ibmq_lima', 'ibmq_belem', 'ibm_qasm_simulator', 'ibmq_quito', 'ibmq_santiago'];
@@ -1662,7 +1737,8 @@ measure q -> c;</textarea>
                 'dashboard': 'Dashboard',
                 'qiskit': 'Qiskit Lab',
                 'qasm': 'QASM Simulator',
-                'learn': 'Learn Quantum'
+                'learn': 'Learn Quantum',
+                'distance': 'Distance Selection'
             };
             
             showNotification(`Switched to ${tabNames[tabName]} tab`, 'info', 1500);
@@ -1966,6 +2042,233 @@ measure q -> c;`
             const randomExample = examples[Math.floor(Math.random() * examples.length)];
             document.getElementById('qasmCode').value = randomExample;
             showNotification('QASM example loaded successfully', 'success');
+        }
+        
+        // Backend locations with coordinates
+        const backendLocations = {
+            'ibmq_manila': { 
+                city: 'Manila', 
+                country: 'Philippines', 
+                lat: 14.5995, 
+                lon: 120.9842,
+                description: '27-qubit Falcon processor'
+            },
+            'ibmq_lima': { 
+                city: 'Lima', 
+                country: 'Peru', 
+                lat: -12.0464, 
+                lon: -77.0428,
+                description: '5-qubit Falcon processor'
+            },
+            'ibmq_belem': { 
+                city: 'Belem', 
+                country: 'Brazil', 
+                lat: -1.4558, 
+                lon: -48.5044,
+                description: '5-qubit Falcon processor'
+            },
+            'ibm_qasm_simulator': { 
+                city: 'Virtual', 
+                country: 'Cloud', 
+                lat: null, 
+                lon: null,
+                description: 'Quantum simulator with no physical location'
+            },
+            'ibmq_quito': { 
+                city: 'Quito', 
+                country: 'Ecuador', 
+                lat: -0.1807, 
+                lon: -78.4678,
+                description: '5-qubit Falcon processor'
+            },
+            'ibmq_santiago': { 
+                city: 'Santiago', 
+                country: 'Chile', 
+                lat: -33.4489, 
+                lon: -70.6693,
+                description: '7-qubit Falcon processor'
+            }
+        };
+        
+        // User location
+        let userLocation = null;
+        let selectedBackend = null;
+        
+        // Detect user's current location
+        function detectUserLocation() {
+            showNotification('Detecting your location...', 'info');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude
+                        };
+                        
+                        document.getElementById('userLocation').value = 
+                            `${userLocation.lat.toFixed(4)}, ${userLocation.lon.toFixed(4)}`;
+                        
+                        showNotification('Location detected successfully', 'success');
+                        findNearestBackends();
+                    },
+                    error => {
+                        showNotification('Location detection failed. Please enter manually.', 'error');
+                        console.error('Geolocation error:', error);
+                    }
+                );
+            } else {
+                showNotification('Geolocation is not supported by your browser', 'error');
+            }
+        }
+        
+        // Calculate distance between two points using Haversine formula
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distance = R * c;
+            return distance;
+        }
+        
+        // Find nearest backends based on user location
+        function findNearestBackends() {
+            const locationInput = document.getElementById('userLocation').value.trim();
+            
+            if (!locationInput) {
+                showNotification('Please enter your location', 'warning');
+                return;
+            }
+            
+            // If we don't have coordinates, try to geocode the input
+            if (!userLocation) {
+                // For demo purposes, we'll use a simple geocoding simulation
+                const simulatedLocations = {
+                    'new york': { lat: 40.7128, lon: -74.0060 },
+                    'london': { lat: 51.5074, lon: -0.1278 },
+                    'tokyo': { lat: 35.6895, lon: 139.6917 },
+                    'sydney': { lat: -33.8688, lon: 151.2093 },
+                    'paris': { lat: 48.8566, lon: 2.3522 }
+                };
+                
+                const inputLower = locationInput.toLowerCase();
+                let found = false;
+                
+                for (const [city, coords] of Object.entries(simulatedLocations)) {
+                    if (inputLower.includes(city)) {
+                        userLocation = coords;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    // Default to a random location if not found
+                    userLocation = {
+                        lat: (Math.random() - 0.5) * 180,
+                        lon: (Math.random() - 0.5) * 360
+                    };
+                    showNotification('Location not found. Using random coordinates for demo.', 'warning');
+                }
+            }
+            
+            // Calculate distances to all backends
+            const backendDistances = [];
+            
+            for (const [backendId, location] of Object.entries(backendLocations)) {
+                if (location.lat === null || location.lon === null) {
+                    // Virtual backend - no distance
+                    backendDistances.push({
+                        id: backendId,
+                        name: backendId,
+                        location: `${location.city}, ${location.country}`,
+                        distance: 0,
+                        description: location.description,
+                        isVirtual: true
+                    });
+                } else {
+                    const distance = calculateDistance(
+                        userLocation.lat, userLocation.lon,
+                        location.lat, location.lon
+                    );
+                    
+                    backendDistances.push({
+                        id: backendId,
+                        name: backendId,
+                        location: `${location.city}, ${location.country}`,
+                        distance: distance,
+                        description: location.description,
+                        isVirtual: false
+                    });
+                }
+            }
+            
+            // Sort by distance (virtual backends come last)
+            backendDistances.sort((a, b) => {
+                if (a.isVirtual && !b.isVirtual) return 1;
+                if (!a.isVirtual && b.isVirtual) return -1;
+                return a.distance - b.distance;
+            });
+            
+            // Display results
+            displayBackendResults(backendDistances);
+            
+            showNotification('Nearest backends calculated successfully', 'success');
+        }
+        
+        // Display backend results
+        function displayBackendResults(backends) {
+            const resultsContainer = document.getElementById('backendResults');
+            resultsContainer.innerHTML = '';
+            
+            backends.forEach(backend => {
+                const card = document.createElement('div');
+                card.className = 'card p-4 mb-4 cursor-pointer';
+                card.onclick = () => selectBackend(backend.id);
+                
+                let distanceText = '';
+                if (backend.isVirtual) {
+                    distanceText = '<span class="text-blue-400 text-sm">Virtual</span>';
+                } else {
+                    distanceText = `<span class="text-cyan-400 text-sm">${backend.distance.toFixed(0)} km</span>`;
+                }
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-medium text-lg">${backend.name}</h4>
+                            <p class="text-gray-400 text-sm">${backend.location}</p>
+                            <p class="text-gray-500 text-sm mt-1">${backend.description}</p>
+                        </div>
+                        <div>
+                            ${distanceText}
+                        </div>
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(card);
+            });
+        }
+        
+        // Select a backend
+        function selectBackend(backendId) {
+            selectedBackend = backendId;
+            
+            // Update UI to show selected backend
+            document.querySelectorAll('#backendResults > div').forEach(card => {
+                card.style.border = '1px solid var(--glass-border)';
+            });
+            
+            event.currentTarget.style.border = '1px solid var(--primary)';
+            
+            // Get backend details
+            const backend = backendLocations[backendId];
+            showNotification(`Selected backend: ${backendId} in ${backend.city}, ${backend.country}`, 'success');
         }
         
         // Initialize
