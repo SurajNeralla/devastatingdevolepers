@@ -11,6 +11,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <!-- QASM Simulator Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qiskit@0.45.0/dist/qiskit.min.js"></script>
     <style>
         :root {
             --primary: #00d9ff;
@@ -355,6 +357,58 @@
             margin-bottom: 16px;
             opacity: 0.7;
         }
+        /* QASM Simulator specific styles */
+        .qasm-editor {
+            background: #1e1e1e;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+            position: relative;
+            min-height: 300px;
+        }
+        .qasm-editor::before {
+            content: 'QASM Code';
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .qasm-results {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 200px;
+        }
+        .histogram-bar {
+            height: 30px;
+            margin: 10px 0;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        .circuit-qasm {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -410,6 +464,9 @@
             </div>
             <div class="tab" onclick="switchTab('qiskit', event)">
                 <i class="fas fa-code mr-2"></i>Qiskit Lab
+            </div>
+            <div class="tab" onclick="switchTab('qasm', event)">
+                <i class="fas fa-microchip mr-2"></i>QASM Simulator
             </div>
             <div class="tab" onclick="switchTab('learn', event)">
                 <i class="fas fa-graduation-cap mr-2"></i>Learn Quantum
@@ -579,6 +636,65 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             </div>
         </div>
         
+        <!-- QASM Simulator Tab -->
+        <div id="qasm" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold mb-4">QASM Code Editor</h3>
+                        <div class="qasm-editor">
+                            <textarea id="qasmCode" class="w-full h-64 bg-transparent text-white font-mono text-sm" placeholder="Enter QASM code here...">
+OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[3];
+h q[0];
+cx q[0], q[1];
+cx q[1], q[2];
+measure q -> c;</textarea>
+                        </div>
+                        <div class="flex space-x-4 mt-4">
+                            <button onclick="runQasmCode()" class="btn btn-primary">
+                                <i class="fas fa-play mr-2"></i>Run QASM
+                            </button>
+                            <button onclick="loadQasmExample()" class="btn" style="background: rgba(255,255,255,0.1);">
+                                <i class="fas fa-file-code mr-2"></i>Load Example
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card p-6 mt-6">
+                        <h3 class="text-lg font-semibold mb-4">Circuit Visualization</h3>
+                        <div id="qasmCircuit" class="circuit-qasm">
+                            <div class="text-center py-10 text-gray-400">
+                                <i class="fas fa-microchip text-4xl mb-4"></i>
+                                <p>Run QASM code to visualize the circuit</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold mb-4">Simulation Results</h3>
+                        <div id="qasmResults" class="qasm-results">
+                            <div class="text-center py-10 text-gray-400">
+                                <i class="fas fa-chart-bar text-4xl mb-4"></i>
+                                <p>Run QASM code to see simulation results</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-6 mt-6">
+                        <h3 class="text-lg font-semibold mb-4">State Vector</h3>
+                        <div id="qasmStateVector" class="qasm-results">
+                            <div class="text-center py-10 text-gray-400">
+                                <i class="fas fa-wave-square text-4xl mb-4"></i>
+                                <p>Run QASM code to see state vector</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Learn Quantum Tab -->
         <div id="learn" class="tab-content">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -603,21 +719,21 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
                     <h3 class="text-lg font-semibold mb-4">Quantum Gates</h3>
                     <div class="space-y-3">
                         <div class="flex items-center space-x-3">
-                            
+                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">H</div>
                             <div>
                                 <p class="font-medium">Hadamard Gate</p>
                                 <p class="text-xs text-gray-400">Creates superposition</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
-                            
+                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">X</div>
                             <div>
                                 <p class="font-medium">Pauli-X Gate</p>
                                 <p class="text-xs text-gray-400">Quantum NOT gate</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
-                            
+                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">CX</div>
                             <div>
                                 <p class="font-medium">CNOT Gate</p>
                                 <p class="text-xs text-gray-400">Creates entanglement</p>
@@ -1296,6 +1412,199 @@ counts = result.<span class="function">get_counts</span>(qc)</code></pre>
             if (Math.random() > 0.8) {
                 refreshData();
             }
+        }
+        
+        // QASM Simulator Functions
+        function runQasmCode() {
+            const qasmCode = document.getElementById('qasmCode').value;
+            const resultsDiv = document.getElementById('qasmResults');
+            const circuitDiv = document.getElementById('qasmCircuit');
+            const stateVectorDiv = document.getElementById('qasmStateVector');
+            
+            // Show loading indicators
+            resultsDiv.innerHTML = '<div class="loading-indicator"><div class="spinner"></div></div>';
+            circuitDiv.innerHTML = '<div class="loading-indicator"><div class="spinner"></div></div>';
+            stateVectorDiv.innerHTML = '<div class="loading-indicator"><div class="spinner"></div></div>';
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                try {
+                    // Parse QASM code to extract circuit information
+                    const lines = qasmCode.split('\n').filter(line => line.trim() !== '');
+                    const qregMatch = qasmCode.match(/qreg\s+(\w+)\[(\d+)\]/);
+                    const cregMatch = qasmCode.match(/creg\s+(\w+)\[(\d+)\]/);
+                    
+                    if (!qregMatch) {
+                        throw new Error("No quantum register defined in QASM code");
+                    }
+                    
+                    const numQubits = parseInt(qregMatch[2]);
+                    const numClassical = cregMatch ? parseInt(cregMatch[2]) : numQubits;
+                    
+                    // Extract gates
+                    const gates = [];
+                    lines.forEach(line => {
+                        line = line.trim();
+                        if (line.startsWith('h ')) {
+                            const match = line.match(/h\s+(\w+)\[(\d+)\]/);
+                            if (match) {
+                                gates.push({ type: 'H', target: parseInt(match[2]) });
+                            }
+                        } else if (line.startsWith('x ')) {
+                            const match = line.match(/x\s+(\w+)\[(\d+)\]/);
+                            if (match) {
+                                gates.push({ type: 'X', target: parseInt(match[2]) });
+                            }
+                        } else if (line.startsWith('cx ')) {
+                            const match = line.match(/cx\s+(\w+)\[(\d+)\],\s*(\w+)\[(\d+)\]/);
+                            if (match) {
+                                gates.push({ 
+                                    type: 'CX', 
+                                    control: parseInt(match[2]), 
+                                    target: parseInt(match[4]) 
+                                });
+                            }
+                        } else if (line.startsWith('measure ')) {
+                            const match = line.match(/measure\s+(\w+)\s*->\s*(\w+)/);
+                            if (match) {
+                                gates.push({ type: 'MEASURE' });
+                            }
+                        }
+                    });
+                    
+                    // Generate circuit visualization
+                    let circuitHTML = '<div class="circuit-container">';
+                    for (let i = 0; i < numQubits; i++) {
+                        circuitHTML += `
+                            <div class="circuit-line">
+                                <span class="qubit-label">q${i}</span>
+                        `;
+                        
+                        // Add gates for this qubit
+                        gates.forEach((gate, index) => {
+                            if (gate.type === 'H' && gate.target === i) {
+                                circuitHTML += `<div class="gate" style="left: ${100 + index * 80}px;">H</div>`;
+                            } else if (gate.type === 'X' && gate.target === i) {
+                                circuitHTML += `<div class="gate" style="left: ${100 + index * 80}px;">X</div>`;
+                            } else if (gate.type === 'CX' && gate.control === i) {
+                                circuitHTML += `<div class="gate" style="left: ${100 + index * 80}px;">•</div>`;
+                            } else if (gate.type === 'CX' && gate.target === i) {
+                                circuitHTML += `<div class="gate" style="left: ${100 + index * 80}px;">CX</div>`;
+                            } else if (gate.type === 'MEASURE') {
+                                circuitHTML += `<div class="gate" style="left: ${100 + index * 80}px; background: var(--accent);">M</div>`;
+                            }
+                        });
+                        
+                        circuitHTML += '</div>';
+                    }
+                    circuitHTML += '</div>';
+                    
+                    circuitDiv.innerHTML = circuitHTML;
+                    
+                    // Generate measurement results (simulated)
+                    const possibleStates = Math.pow(2, numQubits);
+                    const results = {};
+                    
+                    // Create some random results
+                    for (let i = 0; i < possibleStates; i++) {
+                        const state = i.toString(2).padStart(numQubits, '0');
+                        results[state] = Math.floor(Math.random() * 100);
+                    }
+                    
+                    // Normalize to percentages
+                    const total = Object.values(results).reduce((sum, val) => sum + val, 0);
+                    let resultsHTML = '<h4 class="text-md font-semibold mb-3">Measurement Counts</h4>';
+                    
+                    for (const [state, count] of Object.entries(results)) {
+                        const percentage = ((count / total) * 100).toFixed(1);
+                        resultsHTML += `
+                            <div class="mb-2">
+                                <div class="flex justify-between mb-1">
+                                    <span>|${state}⟩</span>
+                                    <span>${percentage}%</span>
+                                </div>
+                                <div class="histogram-bar" style="width: ${percentage}%;"></div>
+                            </div>
+                        `;
+                    }
+                    
+                    resultsDiv.innerHTML = resultsHTML;
+                    
+                    // Generate state vector (simulated)
+                    let stateVectorHTML = '<h4 class="text-md font-semibold mb-3">Quantum State Vector</h4><div class="space-y-2">';
+                    
+                    for (let i = 0; i < possibleStates; i++) {
+                        const state = i.toString(2).padStart(numQubits, '0');
+                        const amplitude = (Math.random() * 2 - 1).toFixed(3);
+                        const probability = (Math.pow(amplitude, 2) * 100).toFixed(1);
+                        
+                        stateVectorHTML += `
+                            <div class="flex justify-between items-center p-2 bg-gray-800 rounded">
+                                <span>|${state}⟩</span>
+                                <div>
+                                    <span class="text-cyan-400">${amplitude}</span>
+                                    <span class="text-gray-400 ml-2">(${probability}%)</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    stateVectorHTML += '</div>';
+                    stateVectorDiv.innerHTML = stateVectorHTML;
+                    
+                } catch (error) {
+                    resultsDiv.innerHTML = `<div class="text-red-400 p-4">Error: ${error.message}</div>`;
+                    circuitDiv.innerHTML = `<div class="text-red-400 p-4">Error: ${error.message}</div>`;
+                    stateVectorDiv.innerHTML = `<div class="text-red-400 p-4">Error: ${error.message}</div>`;
+                }
+            }, 1500); // Simulate processing time
+        }
+        
+        function loadQasmExample() {
+            const examples = [
+                `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[3];
+h q[0];
+cx q[0], q[1];
+cx q[1], q[2];
+measure q -> c;`,
+                
+                `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+creg c[2];
+h q[0];
+h q[1];
+cx q[0], q[1];
+measure q -> c;`,
+                
+                `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[4];
+creg c[4];
+h q[0];
+h q[1];
+h q[2];
+h q[3];
+cx q[0], q[1];
+cx q[1], q[2];
+cx q[2], q[3];
+measure q -> c;`,
+                
+                `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[3];
+creg c[3];
+x q[0];
+h q[1];
+cx q[1], q[2];
+measure q -> c;`
+            ];
+            
+            const randomExample = examples[Math.floor(Math.random() * examples.length)];
+            document.getElementById('qasmCode').value = randomExample;
         }
         
         // Initialize
