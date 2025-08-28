@@ -220,6 +220,86 @@
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
+        /* Notification System Styles */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+        .notification {
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            transform: translateX(120%);
+            animation: slideIn 0.3s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        .notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 4px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .notification-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        .notification-close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .notification-close:hover {
+            opacity: 1;
+        }
+        .notification-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .notification-error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .notification-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        .notification-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        @keyframes slideIn {
+            to {
+                transform: translateX(0);
+            }
+        }
+        @keyframes slideOut {
+            to {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
         /* Reusing previous styles */
         .grid-bg {
             position: fixed;
@@ -471,12 +551,21 @@
             .grid-cols-5 {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+            
+            .notification-container {
+                max-width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="quantum-bg" id="quantumBg"></div>
     <div class="grid-bg"></div>
+    
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
     
     <!-- Firebase Status Indicator -->
     <div id="firebaseStatus" class="firebase-status firebase-disconnected">
@@ -844,6 +933,58 @@ measure q -> c;</textarea>
         const db = firebase.firestore();
         const auth = firebase.auth();
         
+        // Notification System
+        function showNotification(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('notificationContainer');
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            // Set icon based on type
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle notification-icon"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-exclamation-circle notification-icon"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle notification-icon"></i>';
+                    break;
+                case 'info':
+                default:
+                    icon = '<i class="fas fa-info-circle notification-icon"></i>';
+                    break;
+            }
+            
+            // Set notification content
+            notification.innerHTML = `
+                ${icon}
+                <span>${message}</span>
+                <button class="notification-close" onclick="closeNotification(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Add to container
+            container.appendChild(notification);
+            
+            // Auto remove after duration
+            setTimeout(() => {
+                closeNotification(notification.querySelector('.notification-close'));
+            }, duration);
+        }
+        
+        function closeNotification(button) {
+            const notification = button.parentElement;
+            notification.style.animation = 'slideOut 0.3s forwards';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }
+        
         // Quantum particle animation
         function createQuantumParticles() {
             const container = document.getElementById('quantumBg');
@@ -865,9 +1006,11 @@ measure q -> c;</textarea>
             if (connected) {
                 statusElement.className = 'firebase-status firebase-connected';
                 statusText.textContent = 'Connected to Firebase';
+                showNotification('Successfully connected to Firebase', 'success');
             } else {
                 statusElement.className = 'firebase-status firebase-disconnected';
                 statusText.textContent = 'Disconnected from Firebase';
+                showNotification('Disconnected from Firebase. Trying to reconnect...', 'error');
             }
         }
         
@@ -876,8 +1019,10 @@ measure q -> c;</textarea>
             .catch((err) => {
                 if (err.code == 'failed-precondition') {
                     console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+                    showNotification('Multiple tabs open. Firebase persistence enabled in first tab only.', 'warning');
                 } else if (err.code == 'unimplemented') {
                     console.log('The current browser does not support persistence.');
+                    showNotification('Your browser does not support Firebase persistence.', 'warning');
                 }
             });
         
@@ -1347,9 +1492,11 @@ measure q -> c;</textarea>
                     batch.commit().then(() => {
                         console.log('Initial jobs created in Firebase');
                         document.getElementById('jobsLoading').style.display = 'none';
+                        showNotification('Initial quantum jobs created successfully', 'success');
                     }).catch(error => {
                         console.error('Error creating initial jobs:', error);
                         document.getElementById('jobsLoading').style.display = 'none';
+                        showNotification('Error creating initial quantum jobs', 'error');
                     });
                 } else {
                     // Update existing jobs to include cost if missing
@@ -1369,9 +1516,11 @@ measure q -> c;</textarea>
                         updateBatch.commit().then(() => {
                             console.log('Updated existing jobs with cost information');
                             document.getElementById('jobsLoading').style.display = 'none';
+                            showNotification('Updated existing jobs with cost information', 'info');
                         }).catch(error => {
                             console.error('Error updating jobs with cost:', error);
                             document.getElementById('jobsLoading').style.display = 'none';
+                            showNotification('Error updating jobs with cost information', 'error');
                         });
                     } else {
                         document.getElementById('jobsLoading').style.display = 'none';
@@ -1380,6 +1529,7 @@ measure q -> c;</textarea>
             }).catch(error => {
                 console.error('Error checking jobs collection:', error);
                 document.getElementById('jobsLoading').style.display = 'none';
+                showNotification('Error checking jobs collection', 'error');
             });
         }
         
@@ -1422,6 +1572,7 @@ measure q -> c;</textarea>
             }, error => {
                 console.error('Error loading jobs:', error);
                 document.getElementById('jobsLoading').style.display = 'none';
+                showNotification('Error loading quantum jobs from Firebase', 'error');
             });
         }
         
@@ -1505,10 +1656,22 @@ measure q -> c;</textarea>
             if (event) {
                 event.target.classList.add('active');
             }
+            
+            // Show notification for tab change
+            const tabNames = {
+                'dashboard': 'Dashboard',
+                'qiskit': 'Qiskit Lab',
+                'qasm': 'QASM Simulator',
+                'learn': 'Learn Quantum'
+            };
+            
+            showNotification(`Switched to ${tabNames[tabName]} tab`, 'info', 1500);
         }
         
         // Run quantum code simulation
         function runQuantumCode() {
+            showNotification('Running quantum code simulation...', 'info');
+            
             const results = document.getElementById('measurementResults');
             results.innerHTML = `
                 <div class="flex justify-between items-center p-2 bg-gray-800 rounded">
@@ -1528,6 +1691,10 @@ measure q -> c;</textarea>
                     <span class="text-cyan-400">${Math.floor(Math.random() * 15) + 5}%</span>
                 </div>
             `;
+            
+            setTimeout(() => {
+                showNotification('Quantum code simulation completed successfully', 'success');
+            }, 1000);
         }
         
         // View job details
@@ -1539,23 +1706,28 @@ measure q -> c;</textarea>
                     const pricing = backendPricing[job.backend] || backendPricing['ibm_qasm_simulator'];
                     const complexity = algorithmComplexity[job.algorithm] || 1.0;
                     
+                    showNotification(`Viewing details for job ${job.id}`, 'info');
+                    
                     alert(`Job Details:\n\nID: ${job.id}\nAlgorithm: ${job.algorithm}\nQubits: ${job.qubits}\nBackend: ${job.backend}\nStatus: ${job.status}\nCost: $${jobCost.toFixed(2)}\n\nCost Breakdown:\n- Qubit Cost: $${(job.qubits * pricing.qubitCost).toFixed(2)}\n- Algorithm Complexity: ${complexity}x\n- Backend Multiplier: ${pricing.isSimulator ? '1.0x (Simulator)' : '1.5x (Real Device)'}\n- Status Adjustment: ${job.status === 'running' ? '1.5x' : job.status === 'queued' ? '0.8x' : job.status === 'failed' ? '0.5x' : '1.0x'}\n\nIn a real implementation, this would show detailed job information and quantum circuit visualization.`);
                 }
             }).catch(error => {
                 console.error('Error getting job:', error);
-                alert('Error loading job details: ' + error.message);
+                showNotification('Error loading job details: ' + error.message, 'error');
             });
         }
         
         // Refresh data
         function refreshData() {
+            showNotification('Refreshing quantum jobs data...', 'info');
+            
             // Add a new job to Firebase
             const newJob = generateQuantumJob();
             db.collection('quantumJobs').add(newJob).then(() => {
                 console.log('New job added to Firebase');
+                showNotification('New quantum job added successfully', 'success');
             }).catch(error => {
                 console.error('Error adding new job:', error);
-                alert('Error refreshing data: ' + error.message);
+                showNotification('Error refreshing data: ' + error.message, 'error');
             });
         }
         
@@ -1574,6 +1746,8 @@ measure q -> c;</textarea>
                     db.collection('quantumJobs').doc(job.id).update({
                         status: newStatus,
                         cost: newCost
+                    }).then(() => {
+                        showNotification(`Job ${job.id} status updated to ${newStatus}`, 'info');
                     }).catch(error => {
                         console.error('Error updating job status:', error);
                     });
@@ -1583,6 +1757,8 @@ measure q -> c;</textarea>
                     db.collection('quantumJobs').doc(job.id).update({
                         status: 'running',
                         cost: newCost
+                    }).then(() => {
+                        showNotification(`Job ${job.id} started running`, 'info');
                     }).catch(error => {
                         console.error('Error updating job status:', error);
                     });
@@ -1596,6 +1772,8 @@ measure q -> c;</textarea>
         
         // QASM Simulator Functions
         function runQasmCode() {
+            showNotification('Running QASM code simulation...', 'info');
+            
             const qasmCode = document.getElementById('qasmCode').value;
             const resultsDiv = document.getElementById('qasmResults');
             const circuitDiv = document.getElementById('qasmCircuit');
@@ -1732,10 +1910,12 @@ measure q -> c;</textarea>
                     stateVectorHTML += '</div>';
                     stateVectorDiv.innerHTML = stateVectorHTML;
                     
+                    showNotification('QASM code simulation completed successfully', 'success');
                 } catch (error) {
                     resultsDiv.innerHTML = `<div class="text-red-400 p-4">Error: ${error.message}</div>`;
                     circuitDiv.innerHTML = `<div class="text-red-400 p-4">Error: ${error.message}</div>`;
                     stateVectorDiv.innerHTML = `<div class="text-red-400 p-4">Error: ${error.message}</div>`;
+                    showNotification('Error running QASM code: ' + error.message, 'error');
                 }
             }, 1500); // Simulate processing time
         }
@@ -1785,12 +1965,18 @@ measure q -> c;`
             
             const randomExample = examples[Math.floor(Math.random() * examples.length)];
             document.getElementById('qasmCode').value = randomExample;
+            showNotification('QASM example loaded successfully', 'success');
         }
         
         // Initialize
         createQuantumParticles();
         initializeFirebaseJobs();
         loadJobsFromFirebase();
+        
+        // Show welcome notification
+        setTimeout(() => {
+            showNotification('Welcome to Quantum Computing Dashboard!', 'info', 4000);
+        }, 1000);
         
         // Start live updates
         setInterval(simulateLiveUpdates, 5000);
