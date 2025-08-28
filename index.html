@@ -409,6 +409,55 @@
             overflow: hidden;
             min-height: 200px;
         }
+        /* Cost estimation styles */
+        .cost-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .cost-low {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .cost-medium {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+        .cost-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .cost-breakdown {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+        .cost-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid var(--glass-border);
+        }
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -416,6 +465,10 @@
             }
             
             .grid-cols-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            
+            .grid-cols-5 {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
@@ -476,7 +529,7 @@
         <!-- Dashboard Tab -->
         <div id="dashboard" class="tab-content active">
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                 <div class="card p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -521,6 +574,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-amber-400 text-sm mb-1">Total Cost</p>
+                            <p class="text-3xl font-bold" id="totalCost">$0.00</p>
+                        </div>
+                        <div class="bg-amber-500 bg-opacity-20 p-3 rounded-lg">
+                            <i class="fas fa-dollar-sign text-amber-400 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Quantum Circuit Visualization -->
@@ -558,6 +622,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Qubits</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Backend</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Cost</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-cyan-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -719,7 +784,7 @@ measure q -> c;</textarea>
                     <h3 class="text-lg font-semibold mb-4">Quantum Gates</h3>
                     <div class="space-y-3">
                         <div class="flex items-center space-x-3">
-                            
+                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">H</div>
                             <div>
                                 <p class="font-medium">Hadamard Gate</p>
                                 <p class="text-xs text-gray-400">Creates superposition</p>
@@ -733,7 +798,7 @@ measure q -> c;</textarea>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
-                            
+                            <div class="gate" style="width: 30px; height: 30px; font-size: 14px;">CX</div>
                             <div>
                                 <p class="font-medium">CNOT Gate</p>
                                 <p class="text-xs text-gray-400">Creates entanglement</p>
@@ -824,352 +889,362 @@ measure q -> c;</textarea>
             updateFirebaseStatus(false);
         });
         
-        // Unique quantum job names
-        const uniqueJobNames = [
-            "Quantum Teleportation Protocol",
-            "Shor's Factorization Algorithm",
-            "Grover's Quantum Search",
-            "Quantum Fourier Transform",
-            "Variational Quantum Eigensolver",
-            "Quantum Approximate Optimization",
-            "Quantum Phase Estimation",
-            "Quantum Error Correction",
-            "Quantum Key Distribution",
-            "Quantum Machine Learning",
-            "Quantum Simulation of Molecules",
-            "Quantum Walk Algorithm",
-            "Quantum Annealing Process",
-            "Quantum Neural Network",
-            "Quantum Cryptography Protocol",
-            "Quantum Random Number Generation",
-            "Quantum State Tomography",
-            "Quantum Entanglement Swapping",
-            "Quantum Dense Coding",
-            "Quantum Superdense Coding",
-            "Quantum Repeaters Network",
-            "Quantum Sensing Protocol",
-            "Quantum Metrology Algorithm",
-            "Quantum Image Processing",
-            "Quantum Data Compression",
-            "Quantum Communication Channel",
-            "Quantum Fingerprinting",
-            "Quantum Game Theory",
-            "Quantum Blockchain Protocol",
-            "Quantum Financial Modeling",
-            "Quantum Supply Chain Optimization",
-            "Quantum Traffic Routing",
-            "Quantum Weather Prediction",
-            "Quantum Drug Discovery",
-            "Quantum Material Science",
-            "Quantum Portfolio Optimization",
-            "Quantum Risk Analysis",
-            "Quantum Fraud Detection",
-            "Quantum Recommendation System",
-            "Quantum Natural Language Processing",
-            "Quantum Computer Vision",
-            "Quantum Speech Recognition",
-            "Quantum Time Series Analysis",
-            "Quantum Anomaly Detection",
-            "Quantum Clustering Algorithm",
-            "Quantum Classification Model",
-            "Quantum Regression Analysis",
-            "Quantum Dimensionality Reduction",
-            "Quantum Feature Selection",
-            "Quantum Hyperparameter Optimization",
-            "Quantum Reinforcement Learning",
-            "Quantum Transfer Learning",
-            "Quantum Federated Learning",
-            "Quantum Generative Models",
-            "Quantum Autoencoders",
-            "Quantum Boltzmann Machines",
-            "Quantum Convolutional Networks",
-            "Quantum Recurrent Networks",
-            "Quantum Attention Mechanisms",
-            "Quantum Transformer Models",
-            "Quantum Graph Neural Networks",
-            "Quantum Spiking Neural Networks",
-            "Quantum Capsule Networks",
-            "Quantum Reservoir Computing",
-            "Quantum Extreme Learning Machines",
-            "Quantum Echo State Networks",
-            "Quantum Liquid State Machines",
-            "Quantum Cellular Automata",
-            "Quantum Evolutionary Algorithms",
-            "Quantum Genetic Algorithms",
-            "Quantum Particle Swarm Optimization",
-            "Quantum Ant Colony Optimization",
-            "Quantum Bee Colony Algorithm",
-            "Quantum Firefly Algorithm",
-            "Quantum Bat Algorithm",
-            "Quantum Cuckoo Search",
-            "Quantum Harmony Search",
-            "Quantum Simulated Annealing",
-            "Quantum Tabu Search",
-            "Quantum Artificial Immune System",
-            "Quantum Differential Evolution",
-            "Quantum Cultural Algorithm",
-            "Quantum Biogeography-Based Optimization",
-            "Quantum Gravitational Search",
-            "Quantum Big Bang-Big Crunch",
-            "Quantum Charged System Search",
-            "Quantum Magnetic Optimization",
-            "Quantum Black Hole Algorithm",
-            "Quantum Galaxy-Based Search",
-            "Quantum League Championship Algorithm",
-            "Quantum Teaching-Learning Optimization",
-            "Quantum Grey Wolf Optimizer",
-            "Quantum Ant Lion Optimizer",
-            "Quantum Whale Optimization",
-            "Quantum Moth Flame Optimization",
-            "Quantum Salp Swarm Algorithm",
-            "Quantum Grasshopper Optimization",
-            "Quantum Multi-Verse Optimizer",
-            "Quantum Dragonfly Algorithm",
-            "Quantum Crow Search Algorithm",
-            "Quantum Sine Cosine Algorithm",
-            "Quantum Moth-Flame Optimization",
-            "Quantum Jaya Algorithm",
-            "Quantum Symbiotic Organism Search",
-            "Quantum Emperor Penguin Optimizer",
-            "Quantum Henry Gas Solubility Optimization",
-            "Quantum Equilibrium Optimizer",
-            "Quantum Marine Predators Algorithm",
-            "Quantum Slime Mould Algorithm",
-            "Quantum Arithmetic Optimization",
-            "Quantum Aquila Optimizer",
-            "Quantum Quantum Avian Optimizer",
-            "Quantum Fick's Law Algorithm",
-            "Quantum Pathfinder Algorithm",
-            "Quantum Tunicate Swarm Algorithm",
-            "Quantum Chimp Optimization",
-            "Quantum Bloodthirsty Algorithm",
-            "Quantum Teamwork Optimization",
-            "Quantum Artificial Gorilla Troops",
-            "Quantum Dwarf Mongoose Optimizer",
-            "Quantum Coati Optimization",
-            "Quantum Siberian Tiger Optimization",
-            "Quantum Pelican Optimization",
-            "Quantum Kestrel Algorithm",
-            "Quantum Tasmanian Devil Optimization",
-            "Quantum Rhinoceros Optimization",
-            "Quantum Sea-Horse Optimizer",
-            "Quantum Reptile Search Algorithm",
-            "Quantum Honey Badger Algorithm",
-            "Quantum African Vultures Optimization",
-            "Quantum Osprey Optimization",
-            "Quantum Snake Optimizer",
-            "Quantum Dingo Optimizer",
-            "Quantum Epsilon Greedy Algorithm",
-            "Quantum Upper Confidence Bound",
-            "Quantum Thompson Sampling",
-            "Quantum Monte Carlo Tree Search",
-            "Quantum Q-Learning",
-            "Quantum SARSA",
-            "Quantum Deep Q-Network",
-            "Quantum Double Deep Q-Network",
-            "Quantum Dueling Deep Q-Network",
-            "Quantum Prioritized Experience Replay",
-            "Quantum Actor-Critic Methods",
-            "Quantum Proximal Policy Optimization",
-            "Quantum Trust Region Policy Optimization",
-            "Quantum Soft Actor-Critic",
-            "Quantum Twin Delayed Deep Deterministic Policy Gradient",
-            "Quantum Deterministic Policy Gradient",
-            "Quantum Deep Deterministic Policy Gradient",
-            "Quantum Model Predictive Control",
-            "Quantum Linear Quadratic Regulator",
-            "Quantum H-Infinity Control",
-            "Quantum Sliding Mode Control",
-            "Quantum Adaptive Control",
-            "Quantum Robust Control",
-            "Quantum Optimal Control",
-            "Quantum Nonlinear Control",
-            "Quantum Fuzzy Control",
-            "Quantum Neural Control",
-            "Quantum Learning Control",
-            "Quantum Predictive Control",
-            "Quantum Iterative Learning Control",
-            "Quantum Repetitive Control",
-            "Quantum Hybrid Control",
-            "Quantum Multi-Agent Control",
-            "Quantum Decentralized Control",
-            "Quantum Distributed Control",
-            "Quantum Hierarchical Control",
-            "Quantum Networked Control",
-            "Quantum Event-Triggered Control",
-            "Quantum Self-Triggered Control",
-            "Quantum Sampled-Data Control",
-            "Quantum Digital Control",
-            "Quantum Analog Control",
-            "Quantum Mixed-Signal Control",
-            "Quantum Discrete-Time Control",
-            "Quantum Continuous-Time Control",
-            "Quantum Time-Delay Control",
-            "Quantum Stochastic Control",
-            "Quantum Robust Adaptive Control",
-            "Quantum Gain Scheduling",
-            "Quantum Feedback Linearization",
-            "Quantum Backstepping",
-            "Quantum Sliding Mode Observer",
-            "Quantum Kalman Filter",
-            "Quantum Extended Kalman Filter",
-            "Quantum Unscented Kalman Filter",
-            "Quantum Particle Filter",
-            "Quantum Bayesian Filter",
-            "Quantum Moving Horizon Estimation",
-            "Quantum System Identification",
-            "Quantum Parameter Estimation",
-            "Quantum State Estimation",
-            "Quantum Fault Detection",
-            "Quantum Fault Diagnosis",
-            "Quantum Fault Tolerant Control",
-            "Quantum Fault Recovery",
-            "Quantum Fault Isolation",
-            "Quantum Fault Accommodation",
-            "Quantum Health Monitoring",
-            "Quantum Prognostics",
-            "Quantum Remaining Useful Life Prediction",
-            "Quantum Condition-Based Maintenance",
-            "Quantum Predictive Maintenance",
-            "Quantum Reliability Analysis",
-            "Quantum Risk Assessment",
-            "Quantum Safety Analysis",
-            "Quantum Security Analysis",
-            "Quantum Privacy Analysis",
-            "Quantum Performance Analysis",
-            "Quantum Efficiency Analysis",
-            "Quantum Sustainability Analysis",
-            "Quantum Resilience Analysis",
-            "Quantum Adaptability Analysis",
-            "Quantum Scalability Analysis",
-            "Quantum Interoperability Analysis",
-            "Quantum Modularity Analysis",
-            "Quantum Flexibility Analysis",
-            "Quantum Agility Analysis",
-            "Quantum Responsiveness Analysis",
-            "Quantum Robustness Analysis",
-            "Quantum Stability Analysis",
-            "Quantum Controllability Analysis",
-            "Quantum Observability Analysis",
-            "Quantum Reachability Analysis",
-            "Quantum Stabilizability Analysis",
-            "Quantum Detectability Analysis",
-            "Quantum Realizability Analysis",
-            "Quantum Identifiability Analysis",
-            "Quantum Recognizability Analysis",
-            "Quantum Distinguishability Analysis",
-            "Quantum Discriminability Analysis",
-            "Quantum Classifiability Analysis",
-            "Quantum Clusterability Analysis",
-            "Quantum Separability Analysis",
-            "Quantum Entanglement Analysis",
-            "Quantum Coherence Analysis",
-            "Quantum Decoherence Analysis",
-            "Quantum Interference Analysis",
-            "Quantum Superposition Analysis",
-            "Quantum Measurement Analysis",
-            "Quantum Uncertainty Analysis",
-            "Quantum Probability Analysis",
-            "Quantum Statistics Analysis",
-            "Quantum Information Analysis",
-            "Quantum Entropy Analysis",
-            "Quantum Complexity Analysis",
-            "Quantum Computability Analysis",
-            "Quantum Algorithm Analysis",
-            "Quantum Circuit Analysis",
-            "Quantum Gate Analysis",
-            "Quantum Qubit Analysis",
-            "Quantum Register Analysis",
-            "Quantum Memory Analysis",
-            "Quantum Processing Analysis",
-            "Quantum Communication Analysis",
-            "Quantum Networking Analysis",
-            "Quantum Protocol Analysis",
-            "Quantum Cryptography Analysis",
-            "Quantum Security Analysis",
-            "Quantum Privacy Analysis",
-            "Quantum Authentication Analysis",
-            "Quantum Authorization Analysis",
-            "Quantum Access Control Analysis",
-            "Quantum Identity Management Analysis",
-            "Quantum Trust Management Analysis",
-            "Quantum Reputation Management Analysis",
-            "Quantum Risk Management Analysis",
-            "Quantum Compliance Management Analysis",
-            "Quantum Governance Management Analysis",
-            "Quantum Policy Management Analysis",
-            "Quantum Regulation Management Analysis",
-            "Quantum Standardization Management Analysis",
-            "Quantum Certification Management Analysis",
-            "Quantum Validation Management Analysis",
-            "Quantum Verification Management Analysis",
-            "Quantum Testing Management Analysis",
-            "Quantum Quality Management Analysis",
-            "Quantum Assurance Management Analysis",
-            "Quantum Safety Management Analysis",
-            "Quantum Security Management Analysis",
-            "Quantum Privacy Management Analysis",
-            "Quantum Protection Management Analysis",
-            "Quantum Prevention Management Analysis",
-            "Quantum Detection Management Analysis",
-            "Quantum Response Management Analysis",
-            "Quantum Recovery Management Analysis",
-            "Quantum Resilience Management Analysis",
-            "Quantum Adaptability Management Analysis",
-            "Quantum Scalability Management Analysis",
-            "Quantum Interoperability Management Analysis",
-            "Quantum Modularity Management Analysis",
-            "Quantum Flexibility Management Analysis",
-            "Quantum Agility Management Analysis",
-            "Quantum Responsiveness Management Analysis",
-            "Quantum Robustness Management Analysis",
-            "Quantum Stability Management Analysis",
-            "Quantum Performance Management Analysis",
-            "Quantum Efficiency Management Analysis",
-            "Quantum Sustainability Management Analysis",
-            "Quantum Reliability Management Analysis",
-            "Quantum Availability Management Analysis",
-            "Quantum Maintainability Management Analysis",
-            "Quantum Serviceability Management Analysis",
-            "Quantum Usability Management Analysis",
-            "Quantum Accessibility Management Analysis",
-            "Quantum Affordability Management Analysis",
-            "Quantum Acceptability Management Analysis",
-            "Quantum Adoptability Management Analysis",
-            "Quantum Adaptivity Management Analysis",
-            "Quantum Learnability Management Analysis",
-            "Quantum Teachability Management Analysis",
-            "Quantum Understandability Management Analysis",
-            "Quantum Comprehensibility Management Analysis",
-            "Quantum Interpretability Management Analysis",
-            "Quantum Explainability Management Analysis",
-            "Quantum Transparency Management Analysis",
-            "Quantum Accountability Management Analysis",
-            "Quantum Responsibility Management Analysis",
-            "Quantum Liability Management Analysis",
-            "Quantum Credibility Management Analysis",
-            "Quantum Trustworthiness Management Analysis",
-            "Quantum Dependability Management Analysis",
-            "Quantum Reliability Management Analysis",
-            "Quantum Safety Management Analysis",
-            "Quantum Security Management Analysis",
-            "Quantum Privacy Management Analysis",
-            "Quantum Protection Management Analysis",
-            "Quantum Prevention Management Analysis",
-            "Quantum Detection Management Analysis",
-            "Quantum Response Management Analysis",
-            "Quantum Recovery Management Analysis",
-            "Quantum Resilience Management Analysis",
-            "Quantum Adaptability Management Analysis",
-            "Quantum Scalability Management Analysis",
-            "Quantum Interoperability Management Analysis",
-            "Quantum Modularity Management Analysis",
-            "Quantum Flexibility Management Analysis",
-            "Quantum Agility Management Analysis",
-            "Quantum Responsiveness Management Analysis",
-            "Quantum Robustness Management Analysis",
-            "Quantum Stability Management Analysis"
-        ];
+        // Backend pricing information
+        const backendPricing = {
+            'ibmq_manila': { qubitCost: 0.015, timeCost: 0.002, isSimulator: false },
+            'ibmq_lima': { qubitCost: 0.012, timeCost: 0.0015, isSimulator: false },
+            'ibmq_belem': { qubitCost: 0.018, timeCost: 0.0025, isSimulator: false },
+            'ibm_qasm_simulator': { qubitCost: 0.001, timeCost: 0.0001, isSimulator: true },
+            'ibmq_quito': { qubitCost: 0.020, timeCost: 0.003, isSimulator: false },
+            'ibmq_santiago': { qubitCost: 0.025, timeCost: 0.0035, isSimulator: false }
+        };
+        
+        // Algorithm complexity factors
+        const algorithmComplexity = {
+            'Quantum Teleportation Protocol': 1.0,
+            'Shor\'s Factorization Algorithm': 3.5,
+            'Grover\'s Quantum Search': 2.0,
+            'Quantum Fourier Transform': 1.5,
+            'Variational Quantum Eigensolver': 2.8,
+            'Quantum Approximate Optimization': 2.2,
+            'Quantum Phase Estimation': 2.5,
+            'Quantum Error Correction': 3.0,
+            'Quantum Key Distribution': 1.8,
+            'Quantum Machine Learning': 2.7,
+            'Quantum Simulation of Molecules': 3.2,
+            'Quantum Walk Algorithm': 1.7,
+            'Quantum Annealing Process': 2.4,
+            'Quantum Neural Network': 2.9,
+            'Quantum Cryptography Protocol': 1.9,
+            'Quantum Random Number Generation': 0.8,
+            'Quantum State Tomography': 2.6,
+            'Quantum Entanglement Swapping': 1.6,
+            'Quantum Dense Coding': 1.2,
+            'Quantum Superdense Coding': 1.3,
+            'Quantum Repeaters Network': 2.1,
+            'Quantum Sensing Protocol': 1.4,
+            'Quantum Metrology Algorithm': 1.9,
+            'Quantum Image Processing': 2.3,
+            'Quantum Data Compression': 1.5,
+            'Quantum Communication Channel': 1.7,
+            'Quantum Fingerprinting': 1.1,
+            'Quantum Game Theory': 1.8,
+            'Quantum Blockchain Protocol': 2.0,
+            'Quantum Financial Modeling': 2.4,
+            'Quantum Supply Chain Optimization': 2.2,
+            'Quantum Traffic Routing': 1.9,
+            'Quantum Weather Prediction': 2.8,
+            'Quantum Drug Discovery': 3.1,
+            'Quantum Material Science': 2.9,
+            'Quantum Portfolio Optimization': 2.0,
+            'Quantum Risk Analysis': 1.8,
+            'Quantum Fraud Detection': 1.7,
+            'Quantum Recommendation System': 1.6,
+            'Quantum Natural Language Processing': 2.5,
+            'Quantum Computer Vision': 2.7,
+            'Quantum Speech Recognition': 2.1,
+            'Quantum Time Series Analysis': 1.9,
+            'Quantum Anomaly Detection': 1.8,
+            'Quantum Clustering Algorithm': 1.7,
+            'Quantum Classification Model': 1.9,
+            'Quantum Regression Analysis': 1.6,
+            'Quantum Dimensionality Reduction': 1.8,
+            'Quantum Feature Selection': 1.5,
+            'Quantum Hyperparameter Optimization': 2.0,
+            'Quantum Reinforcement Learning': 2.6,
+            'Quantum Transfer Learning': 2.2,
+            'Quantum Federated Learning': 2.4,
+            'Quantum Generative Models': 2.8,
+            'Quantum Autoencoders': 2.3,
+            'Quantum Boltzmann Machines': 2.7,
+            'Quantum Convolutional Networks': 2.9,
+            'Quantum Recurrent Networks': 2.8,
+            'Quantum Attention Mechanisms': 2.6,
+            'Quantum Transformer Models': 3.0,
+            'Quantum Graph Neural Networks': 2.9,
+            'Quantum Spiking Neural Networks': 2.7,
+            'Quantum Capsule Networks': 2.5,
+            'Quantum Reservoir Computing': 2.1,
+            'Quantum Extreme Learning Machines': 1.9,
+            'Quantum Echo State Networks': 1.8,
+            'Quantum Liquid State Machines': 1.7,
+            'Quantum Cellular Automata': 1.6,
+            'Quantum Evolutionary Algorithms': 2.0,
+            'Quantum Genetic Algorithms': 1.9,
+            'Quantum Particle Swarm Optimization': 1.8,
+            'Quantum Ant Colony Optimization': 1.7,
+            'Quantum Bee Colony Algorithm': 1.6,
+            'Quantum Firefly Algorithm': 1.5,
+            'Quantum Bat Algorithm': 1.4,
+            'Quantum Cuckoo Search': 1.6,
+            'Quantum Harmony Search': 1.5,
+            'Quantum Simulated Annealing': 1.7,
+            'Quantum Tabu Search': 1.6,
+            'Quantum Artificial Immune System': 1.8,
+            'Quantum Differential Evolution': 1.7,
+            'Quantum Cultural Algorithm': 1.6,
+            'Quantum Biogeography-Based Optimization': 1.5,
+            'Quantum Gravitational Search': 1.7,
+            'Quantum Big Bang-Big Crunch': 1.6,
+            'Quantum Charged System Search': 1.5,
+            'Quantum Magnetic Optimization': 1.4,
+            'Quantum Black Hole Algorithm': 1.6,
+            'Quantum Galaxy-Based Search': 1.5,
+            'Quantum League Championship Algorithm': 1.7,
+            'Quantum Teaching-Learning Optimization': 1.6,
+            'Quantum Grey Wolf Optimizer': 1.5,
+            'Quantum Ant Lion Optimizer': 1.4,
+            'Quantum Whale Optimization': 1.6,
+            'Quantum Moth Flame Optimization': 1.5,
+            'Quantum Salp Swarm Algorithm': 1.4,
+            'Quantum Grasshopper Optimization': 1.3,
+            'Quantum Multi-Verse Optimizer': 1.4,
+            'Quantum Dragonfly Algorithm': 1.3,
+            'Quantum Crow Search Algorithm': 1.2,
+            'Quantum Sine Cosine Algorithm': 1.3,
+            'Quantum Moth-Flame Optimization': 1.2,
+            'Quantum Jaya Algorithm': 1.1,
+            'Quantum Symbiotic Organism Search': 1.2,
+            'Quantum Emperor Penguin Optimizer': 1.3,
+            'Quantum Henry Gas Solubility Optimization': 1.2,
+            'Quantum Equilibrium Optimizer': 1.1,
+            'Quantum Marine Predators Algorithm': 1.2,
+            'Quantum Slime Mould Algorithm': 1.1,
+            'Quantum Arithmetic Optimization': 1.0,
+            'Quantum Aquila Optimizer': 1.1,
+            'Quantum Quantum Avian Optimizer': 1.0,
+            'Quantum Fick\'s Law Algorithm': 0.9,
+            'Quantum Pathfinder Algorithm': 1.0,
+            'Quantum Tunicate Swarm Algorithm': 0.9,
+            'Quantum Chimp Optimization': 1.0,
+            'Quantum Bloodthirsty Algorithm': 0.9,
+            'Quantum Teamwork Optimization': 1.0,
+            'Quantum Artificial Gorilla Troops': 0.9,
+            'Quantum Dwarf Mongoose Optimizer': 1.0,
+            'Quantum Coati Optimization': 0.9,
+            'Quantum Siberian Tiger Optimization': 1.0,
+            'Quantum Pelican Optimization': 0.9,
+            'Quantum Kestrel Algorithm': 1.0,
+            'Quantum Tasmanian Devil Optimization': 0.9,
+            'Quantum Rhinoceros Optimization': 1.0,
+            'Quantum Sea-Horse Optimizer': 0.9,
+            'Quantum Reptile Search Algorithm': 1.0,
+            'Quantum Honey Badger Algorithm': 0.9,
+            'Quantum African Vultures Optimization': 1.0,
+            'Quantum Osprey Optimization': 0.9,
+            'Quantum Snake Optimizer': 1.0,
+            'Quantum Dingo Optimizer': 0.9,
+            'Quantum Epsilon Greedy Algorithm': 0.8,
+            'Quantum Upper Confidence Bound': 0.9,
+            'Quantum Thompson Sampling': 0.8,
+            'Quantum Monte Carlo Tree Search': 1.0,
+            'Quantum Q-Learning': 0.9,
+            'Quantum SARSA': 0.8,
+            'Quantum Deep Q-Network': 1.0,
+            'Quantum Double Deep Q-Network': 0.9,
+            'Quantum Dueling Deep Q-Network': 0.8,
+            'Quantum Prioritized Experience Replay': 0.9,
+            'Quantum Actor-Critic Methods': 1.0,
+            'Quantum Proximal Policy Optimization': 0.9,
+            'Quantum Trust Region Policy Optimization': 0.8,
+            'Quantum Soft Actor-Critic': 1.0,
+            'Quantum Twin Delayed Deep Deterministic Policy Gradient': 0.9,
+            'Quantum Deterministic Policy Gradient': 0.8,
+            'Quantum Deep Deterministic Policy Gradient': 1.0,
+            'Quantum Model Predictive Control': 0.9,
+            'Quantum Linear Quadratic Regulator': 0.8,
+            'Quantum H-Infinity Control': 0.9,
+            'Quantum Sliding Mode Control': 0.8,
+            'Quantum Adaptive Control': 0.9,
+            'Quantum Robust Control': 0.8,
+            'Quantum Optimal Control': 0.9,
+            'Quantum Nonlinear Control': 0.8,
+            'Quantum Fuzzy Control': 0.9,
+            'Quantum Neural Control': 0.8,
+            'Quantum Learning Control': 0.9,
+            'Quantum Predictive Control': 0.8,
+            'Quantum Iterative Learning Control': 0.9,
+            'Quantum Repetitive Control': 0.8,
+            'Quantum Hybrid Control': 0.9,
+            'Quantum Multi-Agent Control': 0.8,
+            'Quantum Decentralized Control': 0.9,
+            'Quantum Distributed Control': 0.8,
+            'Quantum Hierarchical Control': 0.9,
+            'Quantum Networked Control': 0.8,
+            'Quantum Event-Triggered Control': 0.9,
+            'Quantum Self-Triggered Control': 0.8,
+            'Quantum Sampled-Data Control': 0.9,
+            'Quantum Digital Control': 0.8,
+            'Quantum Analog Control': 0.9,
+            'Quantum Mixed-Signal Control': 0.8,
+            'Quantum Discrete-Time Control': 0.9,
+            'Quantum Continuous-Time Control': 0.8,
+            'Quantum Time-Delay Control': 0.9,
+            'Quantum Stochastic Control': 0.8,
+            'Quantum Robust Adaptive Control': 0.9,
+            'Quantum Gain Scheduling': 0.8,
+            'Quantum Feedback Linearization': 0.9,
+            'Quantum Backstepping': 0.8,
+            'Quantum Sliding Mode Observer': 0.9,
+            'Quantum Kalman Filter': 0.8,
+            'Quantum Extended Kalman Filter': 0.9,
+            'Quantum Unscented Kalman Filter': 0.8,
+            'Quantum Particle Filter': 0.9,
+            'Quantum Bayesian Filter': 0.8,
+            'Quantum Moving Horizon Estimation': 0.9,
+            'Quantum System Identification': 0.8,
+            'Quantum Parameter Estimation': 0.9,
+            'Quantum State Estimation': 0.8,
+            'Quantum Fault Detection': 0.9,
+            'Quantum Fault Diagnosis': 0.8,
+            'Quantum Fault Tolerant Control': 0.9,
+            'Quantum Fault Recovery': 0.8,
+            'Quantum Fault Isolation': 0.9,
+            'Quantum Fault Accommodation': 0.8,
+            'Quantum Health Monitoring': 0.9,
+            'Quantum Prognostics': 0.8,
+            'Quantum Remaining Useful Life Prediction': 0.9,
+            'Quantum Condition-Based Maintenance': 0.8,
+            'Quantum Predictive Maintenance': 0.9,
+            'Quantum Reliability Analysis': 0.8,
+            'Quantum Risk Assessment': 0.9,
+            'Quantum Safety Analysis': 0.8,
+            'Quantum Security Analysis': 0.9,
+            'Quantum Privacy Analysis': 0.8,
+            'Quantum Performance Analysis': 0.9,
+            'Quantum Efficiency Analysis': 0.8,
+            'Quantum Sustainability Analysis': 0.9,
+            'Quantum Resilience Analysis': 0.8,
+            'Quantum Adaptability Analysis': 0.9,
+            'Quantum Scalability Analysis': 0.8,
+            'Quantum Interoperability Analysis': 0.9,
+            'Quantum Modularity Analysis': 0.8,
+            'Quantum Flexibility Analysis': 0.9,
+            'Quantum Agility Analysis': 0.8,
+            'Quantum Responsiveness Analysis': 0.9,
+            'Quantum Robustness Analysis': 0.8,
+            'Quantum Stability Analysis': 0.9,
+            'Quantum Controllability Analysis': 0.8,
+            'Quantum Observability Analysis': 0.9,
+            'Quantum Reachability Analysis': 0.8,
+            'Quantum Stabilizability Analysis': 0.9,
+            'Quantum Detectability Analysis': 0.8,
+            'Quantum Realizability Analysis': 0.9,
+            'Quantum Identifiability Analysis': 0.8,
+            'Quantum Recognizability Analysis': 0.9,
+            'Quantum Distinguishability Analysis': 0.8,
+            'Quantum Discriminability Analysis': 0.9,
+            'Quantum Classifiability Analysis': 0.8,
+            'Quantum Clusterability Analysis': 0.9,
+            'Quantum Separability Analysis': 0.8,
+            'Quantum Entanglement Analysis': 0.9,
+            'Quantum Coherence Analysis': 0.8,
+            'Quantum Decoherence Analysis': 0.9,
+            'Quantum Interference Analysis': 0.8,
+            'Quantum Superposition Analysis': 0.9,
+            'Quantum Measurement Analysis': 0.8,
+            'Quantum Uncertainty Analysis': 0.9,
+            'Quantum Probability Analysis': 0.8,
+            'Quantum Statistics Analysis': 0.9,
+            'Quantum Information Analysis': 0.8,
+            'Quantum Entropy Analysis': 0.9,
+            'Quantum Complexity Analysis': 0.8,
+            'Quantum Computability Analysis': 0.9,
+            'Quantum Algorithm Analysis': 0.8,
+            'Quantum Circuit Analysis': 0.9,
+            'Quantum Gate Analysis': 0.8,
+            'Quantum Qubit Analysis': 0.9,
+            'Quantum Register Analysis': 0.8,
+            'Quantum Memory Analysis': 0.9,
+            'Quantum Processing Analysis': 0.8,
+            'Quantum Communication Analysis': 0.9,
+            'Quantum Networking Analysis': 0.8,
+            'Quantum Protocol Analysis': 0.9,
+            'Quantum Cryptography Analysis': 0.8,
+            'Quantum Security Analysis': 0.9,
+            'Quantum Privacy Analysis': 0.8,
+            'Quantum Authentication Analysis': 0.9,
+            'Quantum Authorization Analysis': 0.8,
+            'Quantum Access Control Analysis': 0.9,
+            'Quantum Identity Management Analysis': 0.8,
+            'Quantum Trust Management Analysis': 0.9,
+            'Quantum Reputation Management Analysis': 0.8,
+            'Quantum Risk Management Analysis': 0.9,
+            'Quantum Compliance Management Analysis': 0.8,
+            'Quantum Governance Management Analysis': 0.9,
+            'Quantum Policy Management Analysis': 0.8,
+            'Quantum Regulation Management Analysis': 0.9,
+            'Quantum Standardization Management Analysis': 0.8,
+            'Quantum Certification Management Analysis': 0.9,
+            'Quantum Validation Management Analysis': 0.8,
+            'Quantum Verification Management Analysis': 0.9,
+            'Quantum Testing Management Analysis': 0.8,
+            'Quantum Quality Management Analysis': 0.9,
+            'Quantum Assurance Management Analysis': 0.8,
+            'Quantum Safety Management Analysis': 0.9,
+            'Quantum Security Management Analysis': 0.8,
+            'Quantum Privacy Management Analysis': 0.9,
+            'Quantum Protection Management Analysis': 0.8,
+            'Quantum Prevention Management Analysis': 0.9,
+            'Quantum Detection Management Analysis': 0.8,
+            'Quantum Response Management Analysis': 0.9,
+            'Quantum Recovery Management Analysis': 0.8,
+            'Quantum Resilience Management Analysis': 0.9,
+            'Quantum Adaptability Management Analysis': 0.8,
+            'Quantum Scalability Management Analysis': 0.9,
+            'Quantum Interoperability Management Analysis': 0.8,
+            'Quantum Modularity Management Analysis': 0.9,
+            'Quantum Flexibility Management Analysis': 0.8,
+            'Quantum Agility Management Analysis': 0.9,
+            'Quantum Responsiveness Management Analysis': 0.8,
+            'Quantum Robustness Management Analysis': 0.9,
+            'Quantum Stability Management Analysis': 0.8,
+            'Quantum Performance Management Analysis': 0.9,
+            'Quantum Efficiency Management Analysis': 0.8,
+            'Quantum Sustainability Management Analysis': 0.9,
+            'Quantum Reliability Management Analysis': 0.8,
+            'Quantum Availability Management Analysis': 0.9,
+            'Quantum Maintainability Management Analysis': 0.8,
+            'Quantum Serviceability Management Analysis': 0.9,
+            'Quantum Usability Management Analysis': 0.8,
+            'Quantum Accessibility Management Analysis': 0.9,
+            'Quantum Affordability Management Analysis': 0.8,
+            'Quantum Acceptability Management Analysis': 0.9,
+            'Quantum Adoptability Management Analysis': 0.8,
+            'Quantum Adaptivity Management Analysis': 0.9,
+            'Quantum Learnability Management Analysis': 0.8,
+            'Quantum Teachability Management Analysis': 0.9,
+            'Quantum Understandability Management Analysis': 0.8,
+            'Quantum Comprehensibility Management Analysis': 0.9,
+            'Quantum Interpretability Management Analysis': 0.8,
+            'Quantum Explainability Management Analysis': 0.9,
+            'Quantum Transparency Management Analysis': 0.8,
+            'Quantum Accountability Management Analysis': 0.9,
+            'Quantum Responsibility Management Analysis': 0.8,
+            'Quantum Liability Management Analysis': 0.9,
+            'Quantum Credibility Management Analysis': 0.8,
+            'Quantum Trustworthiness Management Analysis': 0.9,
+            'Quantum Dependability Management Analysis': 0.8,
+            'Quantum Reliability Management Analysis': 0.9,
+            'Quantum Safety Management Analysis': 0.8,
+            'Quantum Security Management Analysis': 0.9,
+            'Quantum Privacy Management Analysis': 0.8,
+            'Quantum Protection Management Analysis': 0.9,
+            'Quantum Prevention Management Analysis': 0.8,
+            'Quantum Detection Management Analysis': 0.9,
+            'Quantum Response Management Analysis': 0.8,
+            'Quantum Recovery Management Analysis': 0.9,
+            'Quantum Resilience Management Analysis': 0.8,
+            'Quantum Adaptability Management Analysis': 0.9,
+            'Quantum Scalability Management Analysis': 0.8,
+            'Quantum Interoperability Management Analysis': 0.9,
+            'Quantum Modularity Management Analysis': 0.8,
+            'Quantum Flexibility Management Analysis': 0.9,
+            'Quantum Agility Management Analysis': 0.8,
+            'Quantum Responsiveness Management Analysis': 0.9,
+            'Quantum Robustness Management Analysis': 0.8,
+            'Quantum Stability Management Analysis': 0.9
+        };
         
         const backends = ['ibmq_manila', 'ibmq_lima', 'ibmq_belem', 'ibm_qasm_simulator', 'ibmq_quito', 'ibmq_santiago'];
         const jobStatuses = ['running', 'queued', 'completed', 'failed'];
@@ -1177,28 +1252,76 @@ measure q -> c;</textarea>
         let jobs = [];
         let usedJobNames = [];
         
+        // Calculate job cost based on parameters
+        function calculateJobCost(qubits, backend, algorithm, status) {
+            try {
+                const pricing = backendPricing[backend] || backendPricing['ibm_qasm_simulator'];
+                const complexity = algorithmComplexity[algorithm] || 1.0;
+                
+                // Base cost calculation
+                let baseCost = (qubits * pricing.qubitCost) + (complexity * pricing.timeCost);
+                
+                // Adjust cost based on status
+                if (status === 'running') {
+                    baseCost *= 1.5; // Running jobs cost more
+                } else if (status === 'queued') {
+                    baseCost *= 0.8; // Queued jobs cost less
+                } else if (status === 'failed') {
+                    baseCost *= 0.5; // Failed jobs get partial refund
+                }
+                
+                // Add some randomness for realism
+                const randomFactor = 0.9 + (Math.random() * 0.2); // ±10% variation
+                baseCost *= randomFactor;
+                
+                return parseFloat(baseCost.toFixed(2));
+            } catch (error) {
+                console.error('Error calculating cost:', error);
+                return 0.01; // Default minimum cost
+            }
+        }
+        
         // Generate unique quantum job
         function generateQuantumJob() {
-            let availableNames = uniqueJobNames.filter(name => !usedJobNames.includes(name));
-            
-            if (availableNames.length === 0) {
-                // Reset used names if all have been used
-                usedJobNames = [];
-                availableNames = [...uniqueJobNames];
+            try {
+                let availableNames = Object.keys(algorithmComplexity).filter(name => !usedJobNames.includes(name));
+                
+                if (availableNames.length === 0) {
+                    // Reset used names if all have been used
+                    usedJobNames = [];
+                    availableNames = Object.keys(algorithmComplexity);
+                }
+                
+                const randomIndex = Math.floor(Math.random() * availableNames.length);
+                const jobName = availableNames[randomIndex];
+                usedJobNames.push(jobName);
+                
+                const qubits = Math.floor(Math.random() * 20) + 5;
+                const backend = backends[Math.floor(Math.random() * backends.length)];
+                const status = jobStatuses[Math.floor(Math.random() * jobStatuses.length)];
+                
+                return {
+                    id: 'qjob_' + Math.random().toString(36).substr(2, 9),
+                    algorithm: jobName,
+                    qubits: qubits,
+                    backend: backend,
+                    status: status,
+                    cost: calculateJobCost(qubits, backend, jobName, status),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+            } catch (error) {
+                console.error('Error generating job:', error);
+                // Return a default job
+                return {
+                    id: 'qjob_' + Math.random().toString(36).substr(2, 9),
+                    algorithm: 'Quantum Algorithm',
+                    qubits: 5,
+                    backend: 'ibm_qasm_simulator',
+                    status: 'queued',
+                    cost: 0.01,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
             }
-            
-            const randomIndex = Math.floor(Math.random() * availableNames.length);
-            const jobName = availableNames[randomIndex];
-            usedJobNames.push(jobName);
-            
-            return {
-                id: 'qjob_' + Math.random().toString(36).substr(2, 9),
-                algorithm: jobName,
-                qubits: Math.floor(Math.random() * 20) + 5,
-                backend: backends[Math.floor(Math.random() * backends.length)],
-                status: jobStatuses[Math.floor(Math.random() * jobStatuses.length)],
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
         }
         
         // Initialize jobs in Firebase
@@ -1229,7 +1352,30 @@ measure q -> c;</textarea>
                         document.getElementById('jobsLoading').style.display = 'none';
                     });
                 } else {
-                    document.getElementById('jobsLoading').style.display = 'none';
+                    // Update existing jobs to include cost if missing
+                    const updateBatch = db.batch();
+                    let needsUpdate = false;
+                    
+                    snapshot.forEach(doc => {
+                        const job = doc.data();
+                        if (!job.hasOwnProperty('cost') || job.cost === undefined || job.cost === null) {
+                            const calculatedCost = calculateJobCost(job.qubits, job.backend, job.algorithm, job.status);
+                            updateBatch.update(doc.ref, { cost: calculatedCost });
+                            needsUpdate = true;
+                        }
+                    });
+                    
+                    if (needsUpdate) {
+                        updateBatch.commit().then(() => {
+                            console.log('Updated existing jobs with cost information');
+                            document.getElementById('jobsLoading').style.display = 'none';
+                        }).catch(error => {
+                            console.error('Error updating jobs with cost:', error);
+                            document.getElementById('jobsLoading').style.display = 'none';
+                        });
+                    } else {
+                        document.getElementById('jobsLoading').style.display = 'none';
+                    }
                 }
             }).catch(error => {
                 console.error('Error checking jobs collection:', error);
@@ -1251,6 +1397,12 @@ measure q -> c;</textarea>
                         id: doc.id,
                         ...doc.data()
                     };
+                    
+                    // Ensure cost is always defined
+                    if (!job.hasOwnProperty('cost') || job.cost === undefined || job.cost === null) {
+                        job.cost = calculateJobCost(job.qubits, job.backend, job.algorithm, job.status);
+                    }
+                    
                     jobs.push(job);
                     usedJobNames.push(job.algorithm);
                 });
@@ -1287,6 +1439,15 @@ measure q -> c;</textarea>
                     'completed': 'text-blue-400',
                     'failed': 'text-red-400'
                 };
+                
+                // Ensure cost is defined
+                const jobCost = job.cost || 0;
+                
+                // Determine cost badge class
+                let costBadgeClass = 'cost-low';
+                if (jobCost > 0.5) costBadgeClass = 'cost-medium';
+                if (jobCost > 1.0) costBadgeClass = 'cost-high';
+                
                 row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${job.id}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">${job.algorithm}</td>
@@ -1295,6 +1456,11 @@ measure q -> c;</textarea>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <span class="${statusColor[job.status]} font-medium">
                             ${job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="cost-badge ${costBadgeClass}">
+                            <i class="fas fa-dollar-sign mr-1"></i>$${jobCost.toFixed(2)}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -1312,9 +1478,12 @@ measure q -> c;</textarea>
             const activeJobs = jobs.filter(job => job.status === 'running').length;
             const queuedJobs = jobs.filter(job => job.status === 'queued').length;
             const totalQubits = jobs.reduce((sum, job) => sum + job.qubits, 0);
+            const totalCost = jobs.reduce((sum, job) => sum + (job.cost || 0), 0);
+            
             document.getElementById('activeJobs').textContent = activeJobs;
             document.getElementById('queuedJobs').textContent = queuedJobs;
             document.getElementById('qubitsUsed').textContent = totalQubits;
+            document.getElementById('totalCost').textContent = `$${totalCost.toFixed(2)}`;
         }
         
         // Tab switching
@@ -1366,7 +1535,11 @@ measure q -> c;</textarea>
             db.collection('quantumJobs').doc(jobId).get().then(doc => {
                 if (doc.exists) {
                     const job = doc.data();
-                    alert(`Job Details:\n\nID: ${job.id}\nAlgorithm: ${job.algorithm}\nQubits: ${job.qubits}\nBackend: ${job.backend}\nStatus: ${job.status}\n\nIn a real implementation, this would show detailed job information and quantum circuit visualization.`);
+                    const jobCost = job.cost || 0;
+                    const pricing = backendPricing[job.backend] || backendPricing['ibm_qasm_simulator'];
+                    const complexity = algorithmComplexity[job.algorithm] || 1.0;
+                    
+                    alert(`Job Details:\n\nID: ${job.id}\nAlgorithm: ${job.algorithm}\nQubits: ${job.qubits}\nBackend: ${job.backend}\nStatus: ${job.status}\nCost: $${jobCost.toFixed(2)}\n\nCost Breakdown:\n- Qubit Cost: $${(job.qubits * pricing.qubitCost).toFixed(2)}\n- Algorithm Complexity: ${complexity}x\n- Backend Multiplier: ${pricing.isSimulator ? '1.0x (Simulator)' : '1.5x (Real Device)'}\n- Status Adjustment: ${job.status === 'running' ? '1.5x' : job.status === 'queued' ? '0.8x' : job.status === 'failed' ? '0.5x' : '1.0x'}\n\nIn a real implementation, this would show detailed job information and quantum circuit visualization.`);
                 }
             }).catch(error => {
                 console.error('Error getting job:', error);
@@ -1395,14 +1568,21 @@ measure q -> c;</textarea>
                 const job = jobs[randomIndex];
                 
                 if (job && job.status === 'running' && Math.random() > 0.7) {
+                    const newStatus = Math.random() > 0.1 ? 'completed' : 'failed';
+                    const newCost = calculateJobCost(job.qubits, job.backend, job.algorithm, newStatus);
+                    
                     db.collection('quantumJobs').doc(job.id).update({
-                        status: 'completed'
+                        status: newStatus,
+                        cost: newCost
                     }).catch(error => {
                         console.error('Error updating job status:', error);
                     });
                 } else if (job && job.status === 'queued' && Math.random() > 0.5) {
+                    const newCost = calculateJobCost(job.qubits, job.backend, job.algorithm, 'running');
+                    
                     db.collection('quantumJobs').doc(job.id).update({
-                        status: 'running'
+                        status: 'running',
+                        cost: newCost
                     }).catch(error => {
                         console.error('Error updating job status:', error);
                     });
